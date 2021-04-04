@@ -1,4 +1,4 @@
-import DummyClass from '../src/rascl'
+import DummyClass from '../src'
 
 /**
  * Dummy test
