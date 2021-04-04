@@ -85,7 +85,7 @@
     // "noUnusedParameters": true,
 
     /* Report error when not all code paths in function return a value. */
-    // "noImplicitReturns": true,
+    "noImplicitReturns": true,
 
     /* Report errors for fallthrough cases in switch statement. */
     // "noFallthroughCasesInSwitch": true,

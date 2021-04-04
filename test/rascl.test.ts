@@ -1,14 +1,15 @@
-import DummyClass from '../src'
+import createRASCL from "../src";
+import * as ExampleAPI from "./stubs/api";
 
-/**
- * Dummy test
- */
-describe('Dummy test', () => {
-  it('works if true is truthy', () => {
-    expect(true).toBeTruthy()
-  })
+describe("Action Type Constants", () => {
+  it("creates action type constants for a given input", () => {
+    const { actionTypes } = createRASCL(ExampleAPI);
 
-  it('DummyClass is instantiable', () => {
-    expect(new DummyClass()).toBeInstanceOf(DummyClass)
-  })
-})
+    expect(actionTypes.deleteExample.request).toBe("DELETEEXAMPLE_REQUEST");
+    expect(actionTypes.deleteExample.success).toBe("DELETEEXAMPLE_SUCCESS");
+    expect(actionTypes.deleteExample.failure).toBe("DELETEEXAMPLE_FAILURE");
+    expect(actionTypes.deleteExample.mistake).toBe("DELETEEXAMPLE_MISTAKE");
+    expect(actionTypes.deleteExample.timeout).toBe("DELETEEXAMPLE_TIMEOUT");
+    actionTypes.deleteExample.failure;
+  });
+});

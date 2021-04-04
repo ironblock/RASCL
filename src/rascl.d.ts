@@ -1,4 +1,13 @@
+declare type FetchResult<R> = R extends PromiseLike<infer U> ? FetchResult<U> : R;
+declare type APIFunctionMap = { [P: string]: (...args: unknown[]) => PromiseLike<any> };
+
 declare type EndpointState = "request" | "success" | "failure" | "timeout" | "mistake";
+
+declare type RequestType<S extends string> = `${Uppercase<S>}_REQUEST`;
+declare type SuccessType<S extends string> = `${Uppercase<S>}_SUCCESS`;
+declare type FailureType<S extends string> = `${Uppercase<S>}_FAILURE`;
+declare type MistakeType<S extends string> = `${Uppercase<S>}_MISTAKE`;
+declare type TimeoutType<S extends string> = `${Uppercase<S>}_TIMEOUT`;
 
 declare interface EndpointMetadata {
   [k: string]: any;
