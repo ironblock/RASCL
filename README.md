@@ -1,12 +1,11 @@
 # Redux API State Caching Layer (RASCL)
 
-The **Redux API State Caching Layer** (RASCL) is a [Flow](https://flow.org/) and [TypeScript](https://www.typescriptlang.org/) compatible pattern for API consumption. RASCL can be implemented without any of the code from this library, and this can be considered as more of a sample implementation.
+The **Redux API State Caching Layer** (RASCL) is a [TypeScript](https://www.typescriptlang.org/) compatible pattern for API consumption. While this library offers a fully functional TypeScript implementation, RASCL can be implemented as a pattern without any of the code from this library.
 
-The core principle for any RASCL implementation is the same: Redux actions, reducers, and sagas will be generated 1:1 from API calls. The current implementation in this repository produces Flow-typed actions (FSAs), API-calling sagas, and a reducer to handle them.
+The core principle for any RASCL implementation is the same: Redux actions, reducers, and sagas will be generated 1:1 from API calls. The current implementation in this repository produces Flux Standard Actions (FSAs), API-calling sagas, and a reducer to handle them.
 
 **Further reading:**
 
-- [Flow](https://flow.org/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Flux Standard Action (FSA)](https://github.com/redux-utilities/flux-standard-action)
 - [Redux](https://redux.js.org)
