@@ -5,8 +5,6 @@ export interface FluxStandardAction<T extends string, P extends any, M extends a
   meta?: M;
 }
 
-// export type PossibleError<T> =
-
 export interface FluxStandardActionError<
   T extends string,
   P extends Error | undefined,

@@ -25,12 +25,12 @@ export const createRASCL = <M extends APIFunctionMap>(
     };
 
     actions[name] = {
-      request: (payload?) => ({ type: actionTypes[name]!.request, payload }),
-      success: (payload?) => ({ type: actionTypes[name]!.success, payload }),
-      failure: (payload?) => ({ type: actionTypes[name]!.failure, payload, error: true }),
-      mistake: (payload?) => ({ type: actionTypes[name]!.mistake, payload, error: true }),
-      timeout: (payload?) => ({ type: actionTypes[name]!.timeout, payload, error: true }),
-      offline: (payload?) => ({ type: actionTypes[name]!.offline, payload, error: true }),
+      request: (payload) => ({ type: actionTypes[name]!.request, payload }),
+      success: (payload) => ({ type: actionTypes[name]!.success, payload }),
+      failure: (payload) => ({ type: actionTypes[name]!.failure, payload, error: true }),
+      mistake: (payload) => ({ type: actionTypes[name]!.mistake, payload, error: true }),
+      timeout: (payload) => ({ type: actionTypes[name]!.timeout, payload, error: true }),
+      offline: (payload) => ({ type: actionTypes[name]!.offline, payload, error: true }),
     };
   }
 
