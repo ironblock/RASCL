@@ -5,11 +5,10 @@ describe("Action Type Constants", () => {
   it("creates action type constants for a given input", () => {
     const { actionTypes } = createRASCL(ExampleAPI);
 
-    expect(actionTypes.deleteExample.request).toBe("DELETEEXAMPLE_REQUEST");
-    expect(actionTypes.deleteExample.success).toBe("DELETEEXAMPLE_SUCCESS");
-    expect(actionTypes.deleteExample.failure).toBe("DELETEEXAMPLE_FAILURE");
-    expect(actionTypes.deleteExample.mistake).toBe("DELETEEXAMPLE_MISTAKE");
-    expect(actionTypes.deleteExample.timeout).toBe("DELETEEXAMPLE_TIMEOUT");
-    actionTypes.deleteExample.failure;
+    expect(actionTypes.getExample.request).toBe("GET_EXAMPLE_REQUEST");
+    expect(actionTypes.getExample.success).toBe("GET_EXAMPLE_SUCCESS");
+    expect(actionTypes.getExample.failure).toBe("GET_EXAMPLE_FAILURE");
+    expect(actionTypes.getExample.mistake).toBe("GET_EXAMPLE_MISTAKE");
+    expect(actionTypes.getExample.timeout).toBe("GET_EXAMPLE_TIMEOUT");
   });
 });
