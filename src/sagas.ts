@@ -8,6 +8,7 @@ import {
   CallEffect,
   SagaReturnType,
 } from "redux-saga/effects";
+
 import ky from "ky";
 import { APIFunctionMap, GenericAPICall } from "./types/API";
 import { FSA } from "./types/FSA";
@@ -26,9 +27,9 @@ export function* watcherSaga() {}
 export function* kyPublicRequestSaga<M extends APIFunctionMap, S extends string & keyof M>(
   request: M[S],
   action: ReturnType<ActionCreatorsMap<M>[S]["request"]>,
-): Generator<CallEffect<SagaReturnType<M[S]>>, void, ReturnType<M[S]>> {
+): Generator<StrictEffect, void> {
   try {
-    const response = yield call(request, action.payload);
+    const response = yield call<M[S]>(request, action.payload);
   } catch (error) {
     if (error instanceof ky.HTTPError) {
     } else if (error instanceof ky.TimeoutError) {
@@ -37,4 +38,4 @@ export function* kyPublicRequestSaga<M extends APIFunctionMap, S extends string 
 }
 
 export function* kyPrivateRequestSaga() {}
-// : Generator<StrictEffect,>
+
