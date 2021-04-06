@@ -6,7 +6,7 @@ import {
   TimeoutType,
   OfflineType,
 } from "./constants";
-import { FetchResult, APIFunctionMap, GenericAPICall, EndpointStateMap } from "./types/API";
+import { FetchResult, APIFunctionMap, EndpointStateMap } from "./types/API";
 import { FSA, FSE } from "./types/FSA";
 
 export interface ActionCreators<K extends string, M extends APIFunctionMap>

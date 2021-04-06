@@ -1,6 +1,6 @@
 import { SnakeCase } from "type-fest";
 import { snakeCase } from "lodash";
-import { APIFunctionMap } from "./types/API";
+import { APIFunctionMap, EndpointState } from "./types/API";
 
 export type ConstantCase<S extends string> = Uppercase<SnakeCase<S>>;
 

@@ -39,7 +39,13 @@ export type APIReducerState<M extends APIFunctionMap> = {
   [K in string & keyof M]: EndpointData<K, M>;
 };
 
+export interface APIReducer<M extends APIFunctionMap> extends Reducer {
+  (state: APIReducerState<M>, action: FSA<string, any, any>): APIReducerState<M>;
+}
+
 export type APIHandlerMap<M extends APIFunctionMap> = {
+  [K: string]: APIReducer<M>;
+} & {
   [RT in string as RequestType<RT>]: (
     draft: APIReducerState<M>,
     action: RequestAction<RT, M>,
@@ -76,6 +82,17 @@ export type APIHandlerMap<M extends APIFunctionMap> = {
     ) => void;
   };
 
+export const createReducer = <M extends APIFunctionMap>(
+  handlerMap: APIHandlerMap<M>,
+  initialState: APIReducerState<M>,
+) => {
+  return (state: APIReducerState<M> = initialState, action: FSA<string, any, any>) => {
+    if (typeof handlerMap[action.type] === "function") {
+      handlerMap[action.type](state, action);
+    }
+  };
+};
+
 export const initialEndpointState: EndpointData<any, any> = {
   request: null,
   success: null,
@@ -88,15 +105,10 @@ export const initialEndpointState: EndpointData<any, any> = {
   lastResult: null,
 };
 
-export const handleRequest = <
-  K extends string & keyof M,
-  M extends APIFunctionMap,
-  R extends APIReducerState<M>,
-  A extends RequestAction<K, M>
->(
+export const handleRequest = <K extends string & keyof M, M extends APIFunctionMap>(
   name: K,
-  draft: R,
-  action: A,
+  draft: APIReducerState<M>,
+  action: RequestAction<K, M>,
 ): void => {
   draft[name].request = action.payload;
   draft[name].isFetching = true;
@@ -104,15 +116,10 @@ export const handleRequest = <
   draft[name].lastResult = "request";
 };
 
-export const handleSuccess = <
-  K extends string & keyof M,
-  M extends APIFunctionMap,
-  R extends APIReducerState<M>,
-  A extends SuccessAction<K, M>
->(
+export const handleSuccess = <K extends string & keyof M, M extends APIFunctionMap>(
   name: K,
-  draft: R,
-  action: A,
+  draft: APIReducerState<M>,
+  action: SuccessAction<K, M>,
 ): void => {
   draft[name].success = action.payload ?? null;
   draft[name].isFetching = false;
@@ -120,30 +127,20 @@ export const handleSuccess = <
   draft[name].lastResult = "success";
 };
 
-export const handleFailure = <
-  K extends string & keyof M,
-  M extends APIFunctionMap,
-  R extends APIReducerState<M>,
-  A extends FailureAction<K, M>
->(
+export const handleFailure = <K extends string & keyof M, M extends APIFunctionMap>(
   name: K,
-  draft: R,
-  action: A,
+  draft: APIReducerState<M>,
+  action: FailureAction<K, M>,
 ): void => {
   draft[name].failure = action.payload ?? null;
   draft[name].isFetching = false;
   draft[name].lastUpdate = Date.now();
   draft[name].lastResult = "failure";
 };
-export const handleMistake = <
-  K extends string & keyof M,
-  M extends APIFunctionMap,
-  R extends APIReducerState<M>,
-  A extends MistakeAction<K, M>
->(
+export const handleMistake = <K extends string & keyof M, M extends APIFunctionMap>(
   name: K,
-  draft: R,
-  action: A,
+  draft: APIReducerState<M>,
+  action: MistakeAction<K, M>,
 ): void => {
   draft[name].mistake = action.payload ?? null;
   draft[name].isFetching = false;
@@ -151,15 +148,10 @@ export const handleMistake = <
   draft[name].lastResult = "mistake";
 };
 
-export const handleTimeout = <
-  K extends string & keyof M,
-  M extends APIFunctionMap,
-  R extends APIReducerState<M>,
-  A extends TimeoutAction<K, M>
->(
+export const handleTimeout = <K extends string & keyof M, M extends APIFunctionMap>(
   name: K,
-  draft: R,
-  action: A,
+  draft: APIReducerState<M>,
+  action: TimeoutAction<K, M>,
 ): void => {
   draft[name].timeout = action.payload ?? null;
   draft[name].isFetching = false;
@@ -167,15 +159,10 @@ export const handleTimeout = <
   draft[name].lastResult = "timeout";
 };
 
-export const handleOffline = <
-  K extends string & keyof M,
-  M extends APIFunctionMap,
-  R extends APIReducerState<M>,
-  A extends OfflineAction<K, M>
->(
+export const handleOffline = <K extends string & keyof M, M extends APIFunctionMap>(
   name: K,
-  draft: R,
-  action: A,
+  draft: APIReducerState<M>,
+  action: OfflineAction<K, M>,
 ): void => {
   draft[name].offline = action.payload ?? null;
   draft[name].isFetching = false;
