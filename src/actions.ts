@@ -9,10 +9,10 @@ import {
 import { FetchResult, APIFunctionMap, GenericAPICall, EndpointStateMap } from "./types/API";
 import { FSA, FSE } from "./types/FSA";
 
-export interface ActionCreators<K extends string, F extends GenericAPICall>
+export interface ActionCreators<K extends string, M extends APIFunctionMap>
   extends EndpointStateMap {
-  readonly request: (req?: Parameters<F>) => FSA<RequestType<K>, typeof req>;
-  readonly success: (res?: FetchResult<ReturnType<F>>) => FSA<SuccessType<K>, typeof res>;
+  readonly request: (req?: Parameters<M[K]>) => FSA<RequestType<K>, typeof req>;
+  readonly success: (res?: FetchResult<ReturnType<M[K]>>) => FSA<SuccessType<K>, typeof res>;
   readonly failure: (err: Error) => FSE<FailureType<K>, typeof err>;
   readonly mistake: (err: Error) => FSE<MistakeType<K>, typeof err>;
   readonly timeout: (err: Error) => FSE<TimeoutType<K>, typeof err>;
@@ -20,7 +20,7 @@ export interface ActionCreators<K extends string, F extends GenericAPICall>
 }
 
 export type ActionCreatorsMap<M extends APIFunctionMap> = {
-  [K in string & keyof M]: ActionCreators<K, M[K]>;
+  [K in string & keyof M]: ActionCreators<K, M>;
 };
 
 export type RequestAction<K extends string & keyof M, M extends APIFunctionMap> = ReturnType<
@@ -41,10 +41,3 @@ export type TimeoutAction<K extends string & keyof M, M extends APIFunctionMap> 
 export type OfflineAction<K extends string & keyof M, M extends APIFunctionMap> = ReturnType<
   ActionCreatorsMap<M>[K]["offline"]
 >;
-export type UnknownAction<K extends string & keyof M, M extends APIFunctionMap> =
-  | RequestAction<K, M>
-  | SuccessAction<K, M>
-  | FailureAction<K, M>
-  | MistakeAction<K, M>
-  | TimeoutAction<K, M>
-  | OfflineAction<K, M>;

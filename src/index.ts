@@ -1,8 +1,18 @@
 import { ActionCreatorsMap } from "./actions";
 import { ActionTypeConstantsMap, toConstant } from "./constants";
 import { APIFunctionMap } from "./types/API";
-// import * as sagas from "./sagas";
-// import * as reducers from "./reducers";
+import * as sagas from "./sagas";
+import {
+  APIHandlerMap,
+  APIReducerState,
+  handleFailure,
+  handleMistake,
+  handleOffline,
+  handleRequest,
+  handleSuccess,
+  handleTimeout,
+  initialEndpointState,
+} from "./reducers";
 
 export const createRASCL = <M extends APIFunctionMap>(
   functions: M,
@@ -11,11 +21,15 @@ export const createRASCL = <M extends APIFunctionMap>(
   actions: ActionCreatorsMap<M>;
 } => {
   const names: Array<keyof M & string> = Object.keys(functions);
-  const actionTypes: Partial<ActionTypeConstantsMap<M>> = {};
+
+  const types: Partial<ActionTypeConstantsMap<M>> = {};
   const actions: Partial<ActionCreatorsMap<M>> = {};
+  const initialState: Partial<APIReducerState<M>> = {};
+  const handlers: Partial<APIHandlerMap<M>> = {};
 
   for (const name of names) {
-    actionTypes[name] = {
+    // TYPE CONSTANTS
+    types[name] = {
       request: `${toConstant(name)}_REQUEST` as const,
       success: `${toConstant(name)}_SUCCESS` as const,
       failure: `${toConstant(name)}_FAILURE` as const,
@@ -24,18 +38,30 @@ export const createRASCL = <M extends APIFunctionMap>(
       offline: `${toConstant(name)}_OFFLINE` as const,
     };
 
+    // ACTION CREATORS
     actions[name] = {
-      request: (payload) => ({ type: actionTypes[name]!.request, payload }),
-      success: (payload) => ({ type: actionTypes[name]!.success, payload }),
-      failure: (payload) => ({ type: actionTypes[name]!.failure, payload, error: true }),
-      mistake: (payload) => ({ type: actionTypes[name]!.mistake, payload, error: true }),
-      timeout: (payload) => ({ type: actionTypes[name]!.timeout, payload, error: true }),
-      offline: (payload) => ({ type: actionTypes[name]!.offline, payload, error: true }),
+      request: (payload) => ({ type: types[name]!.request, payload }),
+      success: (payload) => ({ type: types[name]!.success, payload }),
+      failure: (payload) => ({ type: types[name]!.failure, payload, error: true }),
+      mistake: (payload) => ({ type: types[name]!.mistake, payload, error: true }),
+      timeout: (payload) => ({ type: types[name]!.timeout, payload, error: true }),
+      offline: (payload) => ({ type: types[name]!.offline, payload, error: true }),
     };
+
+    // REDUCER INITIAL STATE
+    initialState[name] = initialEndpointState;
+
+    // REDUCER ACTION HANDLERS
+    handlers[types[name]!.request] = (draft, action) => handleRequest(name, draft, action);
+    handlers[types[name]!.success] = (draft, action) => handleSuccess(name, draft, action);
+    handlers[types[name]!.failure] = (draft, action) => handleFailure(name, draft, action);
+    handlers[types[name]!.mistake] = (draft, action) => handleMistake(name, draft, action);
+    handlers[types[name]!.timeout] = (draft, action) => handleTimeout(name, draft, action);
+    handlers[types[name]!.offline] = (draft, action) => handleOffline(name, draft, action);
   }
 
   return {
-    actionTypes: actionTypes as Readonly<ActionTypeConstantsMap<M>>,
+    actionTypes: types as Readonly<ActionTypeConstantsMap<M>>,
     actions: actions as Readonly<ActionCreatorsMap<M>>,
   };
 };

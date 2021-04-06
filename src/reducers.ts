@@ -6,7 +6,6 @@ import {
   RequestAction,
   SuccessAction,
   TimeoutAction,
-  UnknownAction,
 } from "./actions";
 import {
   FailureType,
@@ -40,23 +39,41 @@ export type APIReducerState<M extends APIFunctionMap> = {
   [K in string & keyof M]: EndpointData<K, M>;
 };
 
-export type APIHandlerMap<M extends APIFunctionMap, R extends APIReducerState<M>> = {
-  [K in string & keyof M as RequestType<K>]: (name: K, draft: R, A: RequestAction<K, M>) => void;
+export type APIHandlerMap<M extends APIFunctionMap> = {
+  [RT in string as RequestType<RT>]: (
+    draft: APIReducerState<M>,
+    action: RequestAction<RT, M>,
+  ) => void;
 } &
   {
-    [K in string & keyof M as SuccessType<K>]: (name: K, draft: R, A: SuccessAction<K, M>) => void;
+    [ST in string as SuccessType<ST>]: (
+      draft: APIReducerState<M>,
+      action: SuccessAction<ST, M>,
+    ) => void;
   } &
   {
-    [K in string & keyof M as FailureType<K>]: (name: K, draft: R, A: FailureAction<K, M>) => void;
+    [FT in string as FailureType<FT>]: (
+      draft: APIReducerState<M>,
+      action: FailureAction<FT, M>,
+    ) => void;
   } &
   {
-    [K in string & keyof M as MistakeType<K>]: (name: K, draft: R, A: MistakeAction<K, M>) => void;
+    [MT in string as MistakeType<MT>]: (
+      draft: APIReducerState<M>,
+      action: MistakeAction<MT, M>,
+    ) => void;
   } &
   {
-    [K in string & keyof M as TimeoutType<K>]: (name: K, draft: R, A: TimeoutAction<K, M>) => void;
+    [TT in string as TimeoutType<TT>]: (
+      draft: APIReducerState<M>,
+      action: TimeoutAction<TT, M>,
+    ) => void;
   } &
   {
-    [K in string & keyof M as OfflineType<K>]: (name: K, draft: R, A: OfflineAction<K, M>) => void;
+    [OT in string as OfflineType<OT>]: (
+      draft: APIReducerState<M>,
+      action: OfflineAction<OT, M>,
+    ) => void;
   };
 
 export const initialEndpointState: EndpointData<any, any> = {
@@ -71,18 +88,7 @@ export const initialEndpointState: EndpointData<any, any> = {
   lastResult: null,
 };
 
-export type ActionHandler = <
-  K extends string & keyof M,
-  M extends APIFunctionMap,
-  R extends APIReducerState<M>,
-  A extends FSA<any, any, any> & FSE<any, any, any>
->(
-  name: K,
-  draft: R,
-  action: A,
-) => void;
-
-export const handleRequest: ActionHandler = <
+export const handleRequest = <
   K extends string & keyof M,
   M extends APIFunctionMap,
   R extends APIReducerState<M>,
@@ -98,7 +104,7 @@ export const handleRequest: ActionHandler = <
   draft[name].lastResult = "request";
 };
 
-export const handleSuccess: ActionHandler = <
+export const handleSuccess = <
   K extends string & keyof M,
   M extends APIFunctionMap,
   R extends APIReducerState<M>,
@@ -114,7 +120,7 @@ export const handleSuccess: ActionHandler = <
   draft[name].lastResult = "success";
 };
 
-export const handleFailure: ActionHandler = <
+export const handleFailure = <
   K extends string & keyof M,
   M extends APIFunctionMap,
   R extends APIReducerState<M>,
@@ -129,7 +135,7 @@ export const handleFailure: ActionHandler = <
   draft[name].lastUpdate = Date.now();
   draft[name].lastResult = "failure";
 };
-export const handleMistake: ActionHandler = <
+export const handleMistake = <
   K extends string & keyof M,
   M extends APIFunctionMap,
   R extends APIReducerState<M>,
@@ -145,7 +151,7 @@ export const handleMistake: ActionHandler = <
   draft[name].lastResult = "mistake";
 };
 
-export const handleTimeout: ActionHandler = <
+export const handleTimeout = <
   K extends string & keyof M,
   M extends APIFunctionMap,
   R extends APIReducerState<M>,
@@ -161,7 +167,7 @@ export const handleTimeout: ActionHandler = <
   draft[name].lastResult = "timeout";
 };
 
-export const handleOffline: ActionHandler = <
+export const handleOffline = <
   K extends string & keyof M,
   M extends APIFunctionMap,
   R extends APIReducerState<M>,
