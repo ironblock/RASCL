@@ -12,7 +12,7 @@ import {
 import ky from "ky";
 import { APICallNoParams, APICallWithParams, APIFunctionMap, GenericAPICall } from "./types/API";
 import { FSA } from "./types/FSA";
-import { ActionCreatorsMap } from "./actions";
+import { ActionCreatorsMap, RequestAction } from "./actions";
 
 const unknownError = new Error("An error of an unknown type occurred");
 
@@ -26,9 +26,9 @@ export function* watcherSaga() {}
  * @param requestMethod
  * @param action
  */
-export function* kyPublicRequestSaga<M extends APIFunctionMap, S extends string & keyof M>(
+export function* kyPublicRequestSaga<S extends string & keyof M, M extends APIFunctionMap>(
   request: M[S],
-  { payload }: ReturnType<ActionCreatorsMap<M>[S]["request"]>,
+  { payload }: RequestAction<S, M>,
   actionCreators: ActionCreatorsMap<M>[S],
 ): Generator<StrictEffect, void, ReturnType<M[S]>> {
   try {

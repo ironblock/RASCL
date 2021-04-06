@@ -4,20 +4,12 @@ export type APICallNoParams = () => FetchResult<any>;
 export type GenericAPICall = APICallWithParams | APICallNoParams;
 export type APIFunctionMap = { [P in string]: GenericAPICall };
 
-export type EndpointState = "request" | "success" | "failure" | "timeout" | "mistake";
-
-export interface EndpointMetadata {
-  [k: string]: any;
-  readonly isFetching: boolean;
-  readonly lastUpdate: number | null;
-  readonly lastResult: EndpointState | null;
+export interface EndpointStateMap {
+  readonly request: unknown;
+  readonly success: unknown;
+  readonly failure: unknown;
+  readonly mistake: unknown;
+  readonly timeout: unknown;
+  readonly offline: unknown;
 }
-
-export interface Endpoint<R = null, S = null, F = null, M = null, T = null>
-  extends EndpointMetadata {
-  request: R | null;
-  success: S | null;
-  failure: F | null;
-  mistake: M | null;
-  timeout: T | null;
-}
+export type EndpointState = keyof EndpointStateMap;
