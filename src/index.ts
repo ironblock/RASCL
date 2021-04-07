@@ -1,10 +1,11 @@
 import { ActionCreatorsMap } from "./actions";
 import { ActionTypeConstantsMap, toConstant } from "./constants";
 import { APIFunctionMap } from "./types/API";
-import * as sagas from "./sagas";
 import {
   APIHandlerMap,
+  APIReducer,
   APIReducerState,
+  createReducer,
   handleFailure,
   handleMistake,
   handleOffline,
@@ -13,12 +14,15 @@ import {
   handleTimeout,
   initialEndpointState,
 } from "./reducers";
+import { createWatcherSaga, kyPublicRequestSaga, WatcherSagaMap } from "./sagas";
 
 export const createRASCL = <M extends APIFunctionMap>(
   functions: M,
 ): {
   actionTypes: ActionTypeConstantsMap<M>;
   actions: ActionCreatorsMap<M>;
+  reducer: APIReducer<M>;
+  watchers: WatcherSagaMap<M>;
 } => {
   const names: Array<keyof M & string> = Object.keys(functions);
 
@@ -26,6 +30,7 @@ export const createRASCL = <M extends APIFunctionMap>(
   const actions: Partial<ActionCreatorsMap<M>> = {};
   const initialState: Partial<APIReducerState<M>> = {};
   const handlers: Partial<APIHandlerMap<M>> = {};
+  const watchers: Partial<WatcherSagaMap<M>> = {};
 
   for (const name of names) {
     // TYPE CONSTANTS
@@ -58,11 +63,21 @@ export const createRASCL = <M extends APIFunctionMap>(
     handlers[types[name]!.mistake] = (draft, action) => handleMistake(name, draft, action);
     handlers[types[name]!.timeout] = (draft, action) => handleTimeout(name, draft, action);
     handlers[types[name]!.offline] = (draft, action) => handleOffline(name, draft, action);
+
+    // SAGAS
+    watchers[name] = createWatcherSaga(
+      kyPublicRequestSaga,
+      types[name]!.request,
+      functions[name],
+      actions[name] as ActionCreatorsMap<M>[typeof name],
+    );
   }
 
   return {
     actionTypes: types as Readonly<ActionTypeConstantsMap<M>>,
     actions: actions as Readonly<ActionCreatorsMap<M>>,
+    reducer: createReducer(handlers as APIHandlerMap<M>, initialState as APIReducerState<M>),
+    watchers: watchers as WatcherSagaMap<M>,
   };
 };
 

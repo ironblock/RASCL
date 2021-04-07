@@ -1,3 +1,4 @@
+import produce from "immer";
 import { Reducer } from "redux";
 import {
   FailureAction,
@@ -16,7 +17,7 @@ import {
   TimeoutType,
 } from "./constants";
 import { APIFunctionMap, EndpointState, EndpointStateMap } from "./types/API";
-import { FSA, FSE } from "./types/FSA";
+import { FSA } from "./types/FSA";
 
 export interface EndpointMetadata {
   isFetching: boolean;
@@ -85,12 +86,12 @@ export type APIHandlerMap<M extends APIFunctionMap> = {
 export const createReducer = <M extends APIFunctionMap>(
   handlerMap: APIHandlerMap<M>,
   initialState: APIReducerState<M>,
-) => {
-  return (state: APIReducerState<M> = initialState, action: FSA<string, any, any>) => {
+): APIReducer<M> => {
+  return produce((state: APIReducerState<M>, action: FSA<string, any, any>) => {
     if (typeof handlerMap[action.type] === "function") {
       handlerMap[action.type](state, action);
     }
-  };
+  }, initialState);
 };
 
 export const initialEndpointState: EndpointData<any, any> = {

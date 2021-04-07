@@ -59,7 +59,7 @@
     "strict": true,
 
     /* Raise error on expressions and declarations with an implied 'any' type. */
-    // "noImplicitAny": true,
+    "noImplicitAny": true,
 
     /* Enable strict null checks. */
     // "strictNullChecks": true,
