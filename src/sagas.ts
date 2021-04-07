@@ -1,18 +1,7 @@
-import {
-  call,
-  put,
-  takeLatest,
-  all,
-  spawn,
-  StrictEffect,
-  CallEffect,
-  SagaReturnType,
-  ForkEffect,
-} from "redux-saga/effects";
+import { call, put, takeLatest, StrictEffect } from "redux-saga/effects";
 
 import ky from "ky";
 import { APICallNoParams, APICallWithParams, APIFunctionMap, GenericAPICall } from "./types/API";
-import { FSA } from "./types/FSA";
 import { ActionCreatorsMap, RequestAction } from "./actions";
 import { RequestType } from "./constants";
 
@@ -81,3 +70,5 @@ export const createWatcherSaga = <S extends string & keyof M, M extends APIFunct
   function* watcherSaga() {
     yield takeLatest(requestType, requestSaga, request, actionCreators);
   };
+
+export const createRootSlice = () => {};

@@ -1,3 +1,4 @@
+import "jest";
 import createRASCL from "../src";
 import * as ExampleAPI from "./stubs/api";
 

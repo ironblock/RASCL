@@ -12,10 +12,10 @@
     "resolveJsonModule": true,
 
     /* Specify library files to be included in the compilation. */
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": ["DOM","DOM.Iterable","ESNext"],
 
     /* Allow javascript files to be compiled. */
-    "allowJs": false,
+    "allowJs": true,
 
     /* Report errors in .js files. */
     "checkJs": false,
@@ -105,13 +105,12 @@
     // "rootDirs": ["./", "./apps/**", "./libraries/**"],
 
     /* List of folders to include type definitions from. */
-    // "typeRoots": [
-    //   "./types",
-    //   "**/node_modules/@types"
-    // ],
+    "typeRoots": [
+      "**/node_modules/@types"
+    ],
 
     /* Type declaration files to be included in compilation. */
-    // "types": [],
+    "types": ["@types/jest", "@types/node"],
 
     /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
     "allowSyntheticDefaultImports": true,
@@ -148,7 +147,8 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "**/*.ts",
+    "src/*.ts",
+    "tests/*.ts"
   ],
   "exclude": [
     "node_modules",
