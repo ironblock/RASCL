@@ -1,4 +1,13 @@
-import { call, put, takeLatest, StrictEffect } from "redux-saga/effects";
+import {
+  call,
+  put,
+  takeLatest,
+  StrictEffect,
+  all,
+  spawn,
+  ForkEffect,
+  AllEffect,
+} from "redux-saga/effects";
 
 import ky from "ky";
 import { APICallNoParams, APICallWithParams, APIFunctionMap, GenericAPICall } from "./types/API";
@@ -71,4 +80,22 @@ export const createWatcherSaga = <S extends string & keyof M, M extends APIFunct
     yield takeLatest(requestType, requestSaga, request, actionCreators);
   };
 
-export const createRootSlice = () => {};
+export function* createRootSaga<M extends APIFunctionMap>(
+  sagas: WatcherSagaMap<M>,
+): Generator<AllEffect<ForkEffect<void>>, void, unknown> {
+  yield all(
+    Object.entries(sagas).map(([name, saga]) =>
+      spawn(function* () {
+        while (true) {
+          try {
+            yield call(saga);
+            break;
+          } catch (error) {
+            console.error(`The RASCAL API Saga for "${name}" encountered an uncaught error:`);
+            console.error(error);
+          }
+        }
+      }),
+    ),
+  );
+}

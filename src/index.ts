@@ -14,7 +14,7 @@ import {
   handleTimeout,
   initialEndpointState,
 } from "./reducers";
-import { createWatcherSaga, kyPublicRequestSaga, WatcherSagaMap } from "./sagas";
+import { createRootSaga, createWatcherSaga, kyPublicRequestSaga, WatcherSagaMap } from "./sagas";
 
 export const createRASCL = <M extends APIFunctionMap>(
   functions: M,
@@ -22,7 +22,7 @@ export const createRASCL = <M extends APIFunctionMap>(
   actionTypes: ActionTypeConstantsMap<M>;
   actions: ActionCreatorsMap<M>;
   reducer: APIReducer<M>;
-  watchers: WatcherSagaMap<M>;
+  rootSaga: ReturnType<typeof createRootSaga>;
 } => {
   const names: Array<keyof M & string> = Object.keys(functions);
 
@@ -77,7 +77,7 @@ export const createRASCL = <M extends APIFunctionMap>(
     actionTypes: types as Readonly<ActionTypeConstantsMap<M>>,
     actions: actions as Readonly<ActionCreatorsMap<M>>,
     reducer: createReducer(handlers as APIHandlerMap<M>, initialState as APIReducerState<M>),
-    watchers: watchers as WatcherSagaMap<M>,
+    rootSaga: createRootSaga(watchers as WatcherSagaMap<M>),
   };
 };
 
