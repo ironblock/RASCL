@@ -5,6 +5,7 @@ import {
   MistakeType,
   TimeoutType,
   OfflineType,
+  ActionTypeConstantsMap,
 } from "./constants";
 import { FetchResult, APIFunctionMap, EndpointStateMap } from "./types/API";
 import { FSA, FSE } from "./types/FSA";
@@ -41,3 +42,14 @@ export type TimeoutAction<K extends string & keyof M, M extends APIFunctionMap> 
 export type OfflineAction<K extends string & keyof M, M extends APIFunctionMap> = ReturnType<
   ActionCreatorsMap<M>[K]["offline"]
 >;
+
+export const createActions = <M extends APIFunctionMap, K extends keyof M & string>(
+  types: ActionTypeConstantsMap<M>[K],
+): ActionCreatorsMap<M>[K] => ({
+  request: (payload) => ({ type: types.request, payload }),
+  success: (payload) => ({ type: types.success, payload }),
+  failure: (payload) => ({ type: types.failure, payload, error: true }),
+  mistake: (payload) => ({ type: types.mistake, payload, error: true }),
+  timeout: (payload) => ({ type: types.timeout, payload, error: true }),
+  offline: (payload) => ({ type: types.offline, payload, error: true }),
+});
