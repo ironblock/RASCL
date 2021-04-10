@@ -28,7 +28,7 @@ describe("Action Creators", () => {
   });
 
   it("generates a REQUEST action with the correct shape", () => {
-    const request: RFSA<"GET_EXAMPLE_REQUEST", []> = getActions.request([]);
+    const request = getActions.request([]);
 
     expect(request).toMatchObject({ type: "GET_EXAMPLE_REQUEST", payload: [] });
   });
