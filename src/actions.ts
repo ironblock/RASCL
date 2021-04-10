@@ -8,16 +8,18 @@ import {
   ActionTypeConstantsMap,
 } from "./constants";
 import { FetchResult, APIFunctionMap, EndpointStateMap } from "./types/API";
-import { FSA, FSE } from "./types/FSA";
+import { RFSA, RFSE } from "./types/RFSA";
+
+type NonEmpty<T> = T extends Array<infer U> ? U[] & { "0": U } : never;
 
 export interface ActionCreators<K extends string, M extends APIFunctionMap>
   extends EndpointStateMap {
-  readonly request: (req?: Parameters<M[K]>) => FSA<RequestType<K>, typeof req>;
-  readonly success: (res?: FetchResult<ReturnType<M[K]>>) => FSA<SuccessType<K>, typeof res>;
-  readonly failure: (err: Error) => FSE<FailureType<K>, typeof err>;
-  readonly mistake: (err: Error) => FSE<MistakeType<K>, typeof err>;
-  readonly timeout: (err: Error) => FSE<TimeoutType<K>, typeof err>;
-  readonly offline: (err: Error) => FSE<OfflineType<K>, typeof err>;
+  readonly request: (req: Parameters<M[K]>) => RFSA<RequestType<K>, typeof req>;
+  readonly success: (res: FetchResult<ReturnType<M[K]>>) => RFSA<SuccessType<K>, typeof res>;
+  readonly failure: (err: Error) => RFSE<FailureType<K>, typeof err>;
+  readonly mistake: (err: Error) => RFSE<MistakeType<K>, typeof err>;
+  readonly timeout: (err: Error) => RFSE<TimeoutType<K>, typeof err>;
+  readonly offline: (err: Error) => RFSE<OfflineType<K>, typeof err>;
 }
 
 export type ActionCreatorsMap<M extends APIFunctionMap> = {
@@ -45,7 +47,7 @@ export type OfflineAction<K extends string & keyof M, M extends APIFunctionMap> 
 
 export const createActions = <M extends APIFunctionMap, K extends keyof M & string>(
   types: ActionTypeConstantsMap<M>[K],
-): ActionCreatorsMap<M>[K] => ({
+): ActionCreators<K, M> => ({
   request: (payload) => ({ type: types.request, payload }),
   success: (payload) => ({ type: types.success, payload }),
   failure: (payload) => ({ type: types.failure, payload, error: true }),
