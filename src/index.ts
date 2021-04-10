@@ -1,5 +1,5 @@
 import { ActionCreatorsMap, createActions } from "./actions";
-import { ActionTypeConstantsMap, toConstant } from "./constants";
+import { ActionTypeConstantsMap, createTypeConstants, toConstant } from "./constants";
 import { APIFunctionMap } from "./types/API";
 import {
   APIHandlerMap,
@@ -36,20 +36,13 @@ export const createRASCL = <M extends APIFunctionMap>(functions: M): RASCL<M> =>
   const watchers: Partial<RASCL<M>["watchers"]> = {};
 
   for (const name of names) {
-    const typeConstants = {
-      request: `${toConstant(name)}_REQUEST` as const,
-      success: `${toConstant(name)}_SUCCESS` as const,
-      failure: `${toConstant(name)}_FAILURE` as const,
-      mistake: `${toConstant(name)}_MISTAKE` as const,
-      timeout: `${toConstant(name)}_TIMEOUT` as const,
-      offline: `${toConstant(name)}_OFFLINE` as const,
-    };
+    const typeConstants = createTypeConstants<M, typeof name>(name);
 
     // TYPE CONSTANTS
     types[name] = typeConstants;
 
     // ACTION CREATORS
-    actions[name] = createActions(typeConstants);
+    actions[name] = createActions<M, typeof name>(typeConstants);
 
     // REDUCER INITIAL STATE
     initialState[name] = initialEndpointState;
