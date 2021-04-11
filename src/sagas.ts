@@ -43,18 +43,17 @@ export function* kyPublicRequestSaga<K extends string & keyof M, M extends APIFu
   } catch (error) {
     if (error instanceof ky.HTTPError) {
       const { status } = error?.response;
-
       if (status >= 500) {
         // Server Error
         yield put(actionCreators.failure(error));
       } else if (status >= 400) {
         // Client Error
         yield put(actionCreators.mistake(error));
-      } else if (typeof error.response === "undefined") {
-        // Offline Error
-        // Not well documented, but Ky will return `undefined` for the `response`
-        // property when the network is offline or the host is unreachable.
+      } else if (typeof status === "undefined" || status === 0 || navigator?.onLine === false) {
         yield put(actionCreators.offline(error));
+      } else {
+        // Unknown Error
+        yield put(actionCreators.mistake(unknownError));
       }
     } else if (error instanceof ky.TimeoutError) {
       // Timeout Error

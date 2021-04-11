@@ -10,6 +10,18 @@ import {
   handleOffline,
   initialEndpointState,
 } from "../src/reducers";
+import {
+  requestAction,
+  successAction,
+  failureAction,
+  mistakeAction,
+  timeoutAction,
+  offlineAction,
+  failureError,
+  mistakeError,
+  offlineError,
+  timeoutError,
+} from "./stubs/static";
 import * as ExampleAPI from "./stubs/apiKy";
 
 const INITIAL_STATE: APIReducerState<typeof ExampleAPI> = {
@@ -35,10 +47,7 @@ describe("API Reducers", () => {
 
   it("handles REQUEST actions", () => {
     const handledRequest = produce(INITIAL_STATE, (draft) => {
-      handleRequest<"getExample", typeof ExampleAPI>("getExample", draft, {
-        type: "GET_EXAMPLE_REQUEST",
-        payload: [],
-      });
+      handleRequest<"getExample", typeof ExampleAPI>("getExample", draft, requestAction);
     });
 
     expect(handledRequest).toMatchObject({
@@ -54,10 +63,7 @@ describe("API Reducers", () => {
 
   it("handles SUCCESS actions", () => {
     const handledSuccess = produce(INITIAL_STATE, (draft) => {
-      handleSuccess<"getExample", typeof ExampleAPI>("getExample", draft, {
-        type: "GET_EXAMPLE_SUCCESS",
-        payload: ["apples", "bananas", "coconuts"],
-      });
+      handleSuccess<"getExample", typeof ExampleAPI>("getExample", draft, successAction);
     });
 
     expect(handledSuccess).toMatchObject({
@@ -72,19 +78,14 @@ describe("API Reducers", () => {
   });
 
   it("handles FAILURE actions", () => {
-    const error = new Error("The server goofed!");
     const handledFailure = produce(INITIAL_STATE, (draft) => {
-      handleFailure<"getExample", typeof ExampleAPI>("getExample", draft, {
-        type: "GET_EXAMPLE_FAILURE",
-        error: true,
-        payload: error,
-      });
+      handleFailure<"getExample", typeof ExampleAPI>("getExample", draft, failureAction);
     });
 
     expect(handledFailure).toMatchObject({
       getExample: {
         ...initialEndpointState,
-        failure: error,
+        failure: failureError,
         isFetching: false,
         lastUpdate: Date.now(),
         lastResult: "failure",
@@ -93,19 +94,14 @@ describe("API Reducers", () => {
   });
 
   it("handles MISTAKE actions", () => {
-    const error = new Error("You goofed!");
     const handledMistake = produce(INITIAL_STATE, (draft) => {
-      handleMistake<"getExample", typeof ExampleAPI>("getExample", draft, {
-        type: "GET_EXAMPLE_MISTAKE",
-        payload: error,
-        error: true,
-      });
+      handleMistake<"getExample", typeof ExampleAPI>("getExample", draft, mistakeAction);
     });
 
     expect(handledMistake).toMatchObject({
       getExample: {
         ...initialEndpointState,
-        mistake: error,
+        mistake: mistakeError,
         isFetching: false,
         lastUpdate: Date.now(),
         lastResult: "mistake",
@@ -114,19 +110,14 @@ describe("API Reducers", () => {
   });
 
   it("handles TIMEOUT actions", () => {
-    const error = new Error("Waited forever and nothing happened!");
     const handledTimeout = produce(INITIAL_STATE, (draft) => {
-      handleTimeout<"getExample", typeof ExampleAPI>("getExample", draft, {
-        type: "GET_EXAMPLE_TIMEOUT",
-        payload: error,
-        error: true,
-      });
+      handleTimeout<"getExample", typeof ExampleAPI>("getExample", draft, timeoutAction);
     });
 
     expect(handledTimeout).toMatchObject({
       getExample: {
         ...initialEndpointState,
-        timeout: error,
+        timeout: timeoutError,
         isFetching: false,
         lastUpdate: Date.now(),
         lastResult: "timeout",
@@ -135,19 +126,14 @@ describe("API Reducers", () => {
   });
 
   it("handles OFFLINE actions", () => {
-    const error = new Error("You're not connected to Mr. Internet!");
     const handledOffline = produce(INITIAL_STATE, (draft) => {
-      handleOffline<"getExample", typeof ExampleAPI>("getExample", draft, {
-        type: "GET_EXAMPLE_OFFLINE",
-        payload: error,
-        error: true,
-      });
+      handleOffline<"getExample", typeof ExampleAPI>("getExample", draft, offlineAction);
     });
 
     expect(handledOffline).toMatchObject({
       getExample: {
         ...initialEndpointState,
-        offline: error,
+        offline: offlineError,
         isFetching: false,
         lastUpdate: Date.now(),
         lastResult: "offline",
