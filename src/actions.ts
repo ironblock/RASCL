@@ -1,3 +1,4 @@
+import { AsyncReturnType } from "type-fest";
 import {
   RequestType,
   SuccessType,
@@ -7,15 +8,13 @@ import {
   OfflineType,
   ActionTypeConstantsMap,
 } from "./constants";
-import { FetchResult, APIFunctionMap, EndpointStateMap } from "./types/API";
+import { APIFunctionMap, EndpointStateMap } from "./types/API";
 import { RFSA, RFSE } from "./types/RFSA";
-
-type NonEmpty<T> = T extends Array<infer U> ? U[] & { "0": U } : never;
 
 export interface ActionCreators<K extends string, M extends APIFunctionMap>
   extends EndpointStateMap {
   readonly request: (req: Parameters<M[K]>) => RFSA<RequestType<K>, typeof req>;
-  readonly success: (res: FetchResult<ReturnType<M[K]>>) => RFSA<SuccessType<K>, typeof res>;
+  readonly success: (res: AsyncReturnType<M[K]>) => RFSA<SuccessType<K>, typeof res>;
   readonly failure: (err: Error) => RFSE<FailureType<K>, typeof err>;
   readonly mistake: (err: Error) => RFSE<MistakeType<K>, typeof err>;
   readonly timeout: (err: Error) => RFSE<TimeoutType<K>, typeof err>;

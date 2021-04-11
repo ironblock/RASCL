@@ -34,7 +34,7 @@ describe("Action Creators", () => {
   });
 
   it("generates a SUCCESS action with the correct shape", () => {
-    const success: RFSA<"GET_EXAMPLE_SUCCESS", typeof GetResponse> = getActions.success(
+    const success: RFSA<"GET_EXAMPLE_SUCCESS", Readonly<typeof GetResponse>> = getActions.success(
       GetResponse,
     );
 

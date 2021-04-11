@@ -41,7 +41,7 @@ export type APIReducerState<M extends APIFunctionMap> = {
 };
 
 export interface APIReducer<M extends APIFunctionMap> extends Reducer {
-  (state: APIReducerState<M>, action: RFSA<string, any>): APIReducerState<M>;
+  (state: APIReducerState<M>, action: RFSA<string, any> | RFSE<string, Error>): APIReducerState<M>;
 }
 
 export type APIHandlerMap<M extends APIFunctionMap> = {
@@ -87,7 +87,7 @@ export const createReducer = <M extends APIFunctionMap>(
   handlerMap: APIHandlerMap<M>,
   initialState: APIReducerState<M>,
 ): APIReducer<M> => {
-  return produce((state: APIReducerState<M>, action: RFSA<string, any, any>) => {
+  return produce((state, action) => {
     if (typeof handlerMap[action.type] === "function") {
       handlerMap[action.type](state, action);
     }

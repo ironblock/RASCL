@@ -1,8 +1,4 @@
-export interface RASCLFluxStandardAction<
-  T extends string,
-  P extends unknown,
-  M extends any = null
-> {
+export interface RASCLFluxStandardAction<T extends string, P extends any, M extends any = null> {
   type: T;
   payload: P;
   error?: boolean;
