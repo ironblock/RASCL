@@ -94,7 +94,7 @@ export const createReducer = <M extends APIFunctionMap>(
   }, initialState);
 };
 
-export const initialEndpointState: EndpointData<any, any> = {
+export const initialEndpointState: EndpointData<any, any> = Object.freeze({
   request: null,
   success: null,
   failure: null,
@@ -104,7 +104,7 @@ export const initialEndpointState: EndpointData<any, any> = {
   isFetching: false,
   lastUpdate: null,
   lastResult: null,
-};
+});
 
 export const handleRequest = <K extends string & keyof M, M extends APIFunctionMap>(
   name: K,
