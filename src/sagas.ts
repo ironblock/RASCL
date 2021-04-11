@@ -1,19 +1,26 @@
 import {
-  call,
-  put,
-  takeLatest,
+  ActionPattern,
+  AllEffect,
+  ForkEffect,
   StrictEffect,
   all,
+  call,
+  fork,
+  put,
+  select,
   spawn,
-  ForkEffect,
-  AllEffect,
+  take,
+  takeLatest,
+  SelectEffect,
+  TakeEffect,
 } from "redux-saga/effects";
 
 import ky from "ky";
-import { APICallNoParams, APICallWithParams, APIFunctionMap, GenericAPICall } from "./types/API";
+import { APICallNoParams, APICallWithParams, APIFunctionMap } from "./types/API";
 import { ActionCreatorsMap, RequestAction } from "./actions";
 import { RequestType } from "./constants";
 import { AsyncReturnType } from "type-fest";
+import { Action } from "redux";
 
 const unknownError = new Error("An error of an unknown type occurred");
 
@@ -29,7 +36,7 @@ export type WatcherSagaMap<M extends APIFunctionMap> = {
  * @param requestMethod
  * @param action
  */
-export function* kyPublicRequestSaga<K extends string & keyof M, M extends APIFunctionMap>(
+export function* kyRequestSaga<K extends string & keyof M, M extends APIFunctionMap>(
   request: M[K],
   actionCreators: ActionCreatorsMap<M>[K],
   { payload }: RequestAction<K, M>,
@@ -43,6 +50,7 @@ export function* kyPublicRequestSaga<K extends string & keyof M, M extends APIFu
   } catch (error) {
     if (error instanceof ky.HTTPError) {
       const { status } = error?.response;
+
       if (status >= 500) {
         // Server Error
         yield put(actionCreators.failure(error));
@@ -50,25 +58,69 @@ export function* kyPublicRequestSaga<K extends string & keyof M, M extends APIFu
         // Client Error
         yield put(actionCreators.mistake(error));
       } else if (typeof status === "undefined" || status === 0 || navigator?.onLine === false) {
+        // Offline Error
         yield put(actionCreators.offline(error));
       } else {
-        // Unknown Error
+        // Unknown Error (Treated as Client Error)
         yield put(actionCreators.mistake(unknownError));
       }
     } else if (error instanceof ky.TimeoutError) {
       // Timeout Error
       yield put(actionCreators.timeout(error));
     } else if (error instanceof Error) {
-      // Generic Error
+      // Generic Error (Treated as Client Error)
       yield put(actionCreators.mistake(error));
     } else {
-      // Unknown Error
+      // Unknown Error (Treated as Client Error)
       yield put(actionCreators.mistake(unknownError));
     }
   }
 }
 
-export function* kyPrivateRequestSaga() {}
+export function* kyPrivateRequestSaga<
+  A extends unknown,
+  K extends string & keyof M,
+  M extends APIFunctionMap
+>(
+  pattern: ActionPattern<Action<any>>,
+  getAuthentication: () => A,
+  request: M[K],
+  actionCreators: ActionCreatorsMap<M>[K],
+  action: RequestAction<K, M>,
+) {
+  const authentication: A = yield fork(requireAuth, pattern, getAuthentication);
+  const authorizedAction: RequestAction<K, M> = {
+    ...action,
+    payload: [authentication, ...action.payload],
+  };
+
+  yield fork(kyRequestSaga, request, actionCreators, authorizedAction);
+}
+
+/**
+ *
+ * @param pattern A pattern compatible with Redux's `take()` effect. Should
+ * match any actions that may cause the authentication selector to return valid
+ * credentials.
+ * @param getAuthentication A selector to be called with Redux's `select()`
+ * effect. Should return authentication credentials when available.
+ * @returns authentication Authentication credentials in whichever shape your
+ * API calls require them. Can be explicitly typed using `requireAuth`'s `A`
+ * generic.
+ */
+export function* requireAuth<A extends unknown>(
+  pattern: ActionPattern<Action<any>>,
+  getAuthentication: () => A,
+): Generator<SelectEffect | TakeEffect, A, A> {
+  let authentication: A = yield select(getAuthentication);
+
+  while (!authentication) {
+    yield take(pattern);
+    authentication = yield select(getAuthentication);
+  }
+
+  return authentication;
+}
 
 export const createWatcherSaga = <S extends string & keyof M, M extends APIFunctionMap>(
   requestSaga: any,
@@ -91,7 +143,7 @@ export function* createRootSaga<M extends APIFunctionMap>(
             yield call(saga);
             break;
           } catch (error) {
-            console.error(`The RASCAL API Saga for "${name}" encountered an uncaught error:`);
+            console.error(`The RASCAL Saga for "${name}" encountered an uncaught error:`);
             console.error(error);
           }
         }

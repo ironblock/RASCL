@@ -2,11 +2,13 @@
  * @jest-environment jsdom
  */
 
-import { call } from "@redux-saga/core/effects";
+import { call, StrictEffect } from "@redux-saga/core/effects";
 import "jest";
-import { put } from "redux-saga/effects";
-import { kyPublicRequestSaga } from "../src/sagas";
+import { fork, ForkEffect, put, select, take } from "redux-saga/effects";
+import { kyRequestSaga, requireAuth } from "../src/sagas";
 import * as ExampleAPI from "./stubs/apiKy";
+import * as matchers from "redux-saga-test-plan/matchers";
+import { expectSaga } from "redux-saga-test-plan";
 import {
   kyHTTPError400,
   kyHTTPError500,
@@ -39,9 +41,51 @@ describe("Redux Sagas", () => {
     jest.clearAllMocks();
   });
 
+  describe("Blocking Authentication Requirements", () => {
+    it("blocks indefinitely when not authenticated", () => {
+      let authenticated = false;
+      const getAuthenticated = () => authenticated;
+      const saga = expectSaga(requireAuth, "LOGIN_SUCCESS", getAuthenticated);
+
+      saga
+        .select(getAuthenticated)
+        .take("LOGIN_SUCCESS")
+        .select(getAuthenticated)
+        .take("LOGIN_SUCCESS")
+        .select(getAuthenticated)
+        .silentRun();
+    });
+
+    it("returns without looping when already authenticated", () => {
+      let authenticated = true;
+      const getAuthenticated = () => authenticated;
+      const saga = expectSaga(requireAuth, "LOGIN_SUCCESS", getAuthenticated);
+
+      saga.select(getAuthenticated).returns(true);
+    });
+
+    it("returns after looping when finally authenticated", () => {
+      let authenticated = false;
+      const getAuthenticated = () => authenticated;
+      const saga = expectSaga(requireAuth, "LOGIN_SUCCESS", getAuthenticated);
+
+      saga
+        .select(getAuthenticated)
+        .take("LOGIN_SUCCESS")
+        .select(getAuthenticated)
+        .take("LOGIN_SUCCESS")
+        .provide([matchers.select(getAuthenticated), true])
+        .returns(true);
+    });
+  });
+
+  describe("Watcher Sagas", () => {
+    it("generates watcher sagas", () => {});
+  });
+
   describe("Sagas using Ky", () => {
     it("generates sagas that call public API endpoints", () => {
-      const saga = kyPublicRequestSaga<"getExample", typeof ExampleAPI>(
+      const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKy200,
         handlers,
         requestAction,
@@ -51,7 +95,7 @@ describe("Redux Sagas", () => {
     });
 
     it("generates sagas that handle successful API responses", () => {
-      const saga = kyPublicRequestSaga<"getExample", typeof ExampleAPI>(
+      const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKy200,
         handlers,
         requestAction,
@@ -61,13 +105,12 @@ describe("Redux Sagas", () => {
       saga.next();
       expect(saga.next().value).toMatchObject(put(successAction));
       expect(handlers.success).toBeCalledTimes(1);
-      expect(handlers.success).toBeCalledTimes(1);
-      expect(saga.next().done).toEqual(true);
+      expect(saga.next().done).toBe(true);
     });
 
     it("generates sagas that handle 5XX API failures", () => {
       const payload = kyHTTPError500;
-      const saga = kyPublicRequestSaga<"getExample", typeof ExampleAPI>(
+      const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKy500,
         handlers,
         requestAction,
@@ -76,12 +119,12 @@ describe("Redux Sagas", () => {
       saga.next();
       expect(saga.throw(payload).value).toMatchObject(put(failureAction));
       expect(handlers.failure).toBeCalledTimes(1);
-      expect(saga.next().done).toEqual(true);
+      expect(saga.next().done).toBe(true);
     });
 
     it("generates sagas that handle 4XX API failures", () => {
       const payload = kyHTTPError400;
-      const saga = kyPublicRequestSaga<"getExample", typeof ExampleAPI>(
+      const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKy400,
         handlers,
         requestAction,
@@ -90,12 +133,12 @@ describe("Redux Sagas", () => {
       saga.next();
       expect(saga.throw(payload).value).toMatchObject(put(mistakeAction));
       expect(handlers.mistake).toBeCalledTimes(1);
-      expect(saga.next().done).toEqual(true);
+      expect(saga.next().done).toBe(true);
     });
 
     it("generates sagas that handle offline failures", () => {
       const payload = kyOfflineError;
-      const saga = kyPublicRequestSaga<"getExample", typeof ExampleAPI>(
+      const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKyOffline,
         handlers,
         requestAction,
@@ -104,12 +147,12 @@ describe("Redux Sagas", () => {
       saga.next();
       expect(saga.throw(payload).value).toMatchObject(put(offlineAction));
       expect(handlers.offline).toBeCalledTimes(1);
-      expect(saga.next().done).toEqual(true);
+      expect(saga.next().done).toBe(true);
     });
 
     it("generates sagas that handle timeout failures", () => {
       const payload = kyTimeoutError;
-      const saga = kyPublicRequestSaga<"getExample", typeof ExampleAPI>(
+      const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKyTimeout,
         handlers,
         requestAction,
@@ -118,12 +161,12 @@ describe("Redux Sagas", () => {
       saga.next();
       expect(saga.throw(payload).value).toMatchObject(put(timeoutAction));
       expect(handlers.timeout).toBeCalledTimes(1);
-      expect(saga.next().done).toEqual(true);
+      expect(saga.next().done).toBe(true);
     });
 
     it("generates sagas that handle generic clientside errors", () => {
       const payload = new Error("Something bad happened!");
-      const saga = kyPublicRequestSaga<"getExample", typeof ExampleAPI>(
+      const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         () => Promise.reject(new Error("Something bad happened!")),
         handlers,
         requestAction,
@@ -132,12 +175,12 @@ describe("Redux Sagas", () => {
       saga.next();
       expect(saga.throw(payload).value).toMatchObject(put(mistakeAction));
       expect(handlers.mistake).toBeCalledTimes(1);
-      expect(saga.next().done).toEqual(true);
+      expect(saga.next().done).toBe(true);
     });
 
     it("generates sagas that handle unknown clientside errors", () => {
       const payload = undefined;
-      const saga = kyPublicRequestSaga<"getExample", typeof ExampleAPI>(
+      const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         () => Promise.reject(undefined),
         handlers,
         requestAction,
@@ -146,11 +189,9 @@ describe("Redux Sagas", () => {
       saga.next();
       expect(saga.throw(payload).value).toMatchObject(put(mistakeAction));
       expect(handlers.mistake).toBeCalledTimes(1);
-      expect(saga.next().done).toEqual(true);
+      expect(saga.next().done).toBe(true);
     });
   });
-
-  it("generates watcher sagas", () => {});
 });
 function makeKyOfflineError(): any {
   throw new Error("Function not implemented.");
