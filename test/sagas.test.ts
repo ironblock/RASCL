@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 
-import { call } from "@redux-saga/core/effects";
+import { call, put } from "@redux-saga/core/effects";
 import "jest";
-import { expectSaga } from "redux-saga-test-plan";
+import { expectSaga, testSaga } from "redux-saga-test-plan";
 import * as matchers from "redux-saga-test-plan/matchers";
 
-import { kyRequestSaga, requireAuth } from "../src/sagas";
+import { createWatcherSaga, kyRequestSaga, requireAuth } from "../src/sagas";
 import * as ExampleAPI from "./stubs/apiKy";
 import {
   makeKyHTTPError400,
@@ -17,6 +17,7 @@ import {
 } from "./stubs/ky";
 import { GetResponse } from "./stubs/response";
 import {
+  actionTypes,
   createMockActionCreators,
   failureAction,
   mistakeAction,
@@ -31,7 +32,7 @@ const requestKy500 = jest.fn(() => makeKyHTTPError500());
 const requestKy400 = jest.fn(() => makeKyHTTPError400());
 const requestKyTimeout = jest.fn(() => makeKyTimeoutError());
 const requestKyOffline = jest.fn(() => makeKyOfflineError());
-const handlers = createMockActionCreators();
+const actionCreators = createMockActionCreators();
 
 describe("Redux Sagas", () => {
   beforeEach(() => {
@@ -77,14 +78,27 @@ describe("Redux Sagas", () => {
   });
 
   describe("Watcher Sagas", () => {
-    it("generates watcher sagas", () => {});
+    it("generates watcher sagas", () => {
+      const saga = function* () {
+        yield put(successAction);
+      };
+      const actionType = actionTypes.getExample.request;
+      const apiCall = ExampleAPI.getExample;
+      const watcher = createWatcherSaga(saga, actionType, apiCall, actionCreators);
+
+      testSaga(watcher)
+        .next()
+        .takeLatest(actionType, saga, apiCall, actionCreators)
+        .finish()
+        .isDone();
+    });
   });
 
   describe("Sagas using Ky", () => {
     it("generates sagas that call public API endpoints", () => {
       const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKy200,
-        handlers,
+        actionCreators,
         requestAction,
       );
 
@@ -94,7 +108,7 @@ describe("Redux Sagas", () => {
     it("generates sagas that handle successful API responses", () => {
       const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKy200,
-        handlers,
+        actionCreators,
         requestAction,
       );
 
@@ -108,7 +122,7 @@ describe("Redux Sagas", () => {
     it("generates sagas that handle 5XX API failures", () => {
       const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKy500,
-        handlers,
+        actionCreators,
         requestAction,
       );
 
@@ -121,7 +135,7 @@ describe("Redux Sagas", () => {
     it("generates sagas that handle 4XX API failures", () => {
       const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKy400,
-        handlers,
+        actionCreators,
         requestAction,
       );
 
@@ -134,7 +148,7 @@ describe("Redux Sagas", () => {
     it("generates sagas that handle offline failures", () => {
       const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKyOffline,
-        handlers,
+        actionCreators,
         requestAction,
       );
 
@@ -147,7 +161,7 @@ describe("Redux Sagas", () => {
     it("generates sagas that handle timeout failures", () => {
       const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         requestKyTimeout,
-        handlers,
+        actionCreators,
         requestAction,
       );
 
@@ -161,7 +175,7 @@ describe("Redux Sagas", () => {
       const throwGenericError = () => Promise.reject(new Error("Something bad happened!"));
       const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         throwGenericError,
-        handlers,
+        actionCreators,
         requestAction,
       );
 
@@ -175,7 +189,7 @@ describe("Redux Sagas", () => {
       const throwUnknownError = () => Promise.reject(undefined);
       const saga = kyRequestSaga<"getExample", typeof ExampleAPI>(
         throwUnknownError,
-        handlers,
+        actionCreators,
         requestAction,
       );
 
