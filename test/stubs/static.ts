@@ -1,3 +1,4 @@
+import { ActionCreators } from "../../src/actions";
 import { ActionTypeConstantsMap } from "../../src/constants";
 import { APIReducerState, initialEndpointState } from "../../src/reducers";
 import { RFSA, RFSE } from "../../src/types/RFSA";
@@ -93,7 +94,7 @@ export const offlineAction: RFSE<"GET_EXAMPLE_OFFLINE", typeof offlineError> = {
   error: true,
 };
 
-export const createMockActionCreators = () => ({
+export const createMockActionCreators = (): ActionCreators<"getExample", typeof ExampleAPI> => ({
   request: jest.fn(() => requestAction),
   success: jest.fn(() => successAction),
   failure: jest.fn(() => failureAction),

@@ -87,7 +87,7 @@ export function* kyPrivateRequestSaga<
   request: M[K],
   actionCreators: ActionCreatorsMap<M>[K],
   action: RequestAction<K, M>,
-) {
+): Generator<ForkEffect<unknown>, void, A> {
   const authentication: A = yield fork(requireAuth, pattern, getAuthentication);
   const authorizedAction: RequestAction<K, M> = {
     ...action,

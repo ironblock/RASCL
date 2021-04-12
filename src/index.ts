@@ -14,7 +14,7 @@ import {
   handleTimeout,
   initialEndpointState,
 } from "./reducers";
-import { createRootSaga, createWatcherSaga, kyPublicRequestSaga, WatcherSagaMap } from "./sagas";
+import { createRootSaga, createWatcherSaga, kyRequestSaga, WatcherSagaMap } from "./sagas";
 
 export type RASCL<M extends APIFunctionMap> = {
   types: ActionTypeConstantsMap<M>;
@@ -57,7 +57,7 @@ export const createRASCL = <M extends APIFunctionMap>(functions: M): RASCL<M> =>
 
     // SAGAS
     watchers[name] = createWatcherSaga(
-      kyPublicRequestSaga,
+      kyRequestSaga,
       typeConstants.request,
       functions[name],
       actions[name] as ActionCreatorsMap<M>[typeof name],
