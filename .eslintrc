@@ -8,7 +8,7 @@
     "jest": true
   },
   "parserOptions": {
-    "project": "./tsconfig.json",
+    "project": "./tsconfig.eslint.json",
     "ecmaFeatures": {
       "generators": true
     },
@@ -18,8 +18,6 @@
     "standard-with-typescript",
 
     "prettier",
-    "prettier/@typescript-eslint",
-
     "plugin:prettier/recommended",
 
     "plugin:import/errors",

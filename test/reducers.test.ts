@@ -1,4 +1,5 @@
 import produce from "immer";
+
 import "jest";
 import {
   handleEnqueue,
@@ -10,6 +11,8 @@ import {
   handleOffline,
   initialEndpointState,
 } from "../src/reducers";
+import * as ExampleAPI from "./stubs/apiKy";
+import { ExampleEntity } from "./stubs/entities";
 import {
   enqueueActionDelete,
   requestActionGet,
@@ -24,8 +27,6 @@ import {
   timeoutError,
   INITIAL_STATE,
 } from "./stubs/static";
-import * as ExampleAPI from "./stubs/apiKy";
-import { ExampleEntity } from "./stubs/entities";
 
 let mockedDateNow: jest.SpyInstance<number, []>;
 

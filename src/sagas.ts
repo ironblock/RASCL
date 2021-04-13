@@ -1,3 +1,5 @@
+import ky from "ky";
+import { Action } from "redux";
 import {
   ActionPattern,
   AllEffect,
@@ -14,15 +16,9 @@ import {
   SelectEffect,
   TakeEffect,
 } from "redux-saga/effects";
+import { AsyncReturnType } from "type-fest";
+import { Prepend, First } from "typescript-tuple";
 
-import ky from "ky";
-import {
-  APICallNoParams,
-  APICallWithAuthentication,
-  APICallWithParams,
-  APIFunctionMap,
-  APIFunctionMapWithAuthentication,
-} from "./types/API";
 import {
   ActionCreatorsMap,
   doesNotUseParams,
@@ -31,9 +27,13 @@ import {
   RequestParameters,
 } from "./actions";
 import { RequestType } from "./constants";
-import { AsyncReturnType } from "type-fest";
-import { Action } from "redux";
-import { Prepend, First, Tail } from "typescript-tuple";
+import {
+  APICallNoParams,
+  APICallWithAuthentication,
+  APICallWithParams,
+  APIFunctionMap,
+  APIFunctionMapWithAuthentication,
+} from "./types/API";
 
 const unknownError = new Error("An error of an unknown type occurred");
 
@@ -70,7 +70,7 @@ export function* kyRequestSaga<K extends string & keyof M, M extends APIFunction
       } else if (status >= 400) {
         // Client Error
         yield put(actionCreators.mistake(error));
-      } else if (typeof status === "undefined" || status === 0 || navigator?.onLine === false) {
+      } else if (typeof status === "undefined" || status === 0 || !navigator?.onLine) {
         // Offline Error
         yield put(actionCreators.offline(error));
       } else {
@@ -99,7 +99,7 @@ export function* kyPrivateRequestSaga<
   request: M[K],
   actionCreators: ActionCreatorsMap<M>[K],
   { payload }: EnqueueAction<K, M>,
-) {
+): Generator<ForkEffect<unknown>, void, First<Parameters<M[K]>>> {
   const authentication: First<Parameters<M[K]>> = yield fork(
     requireAuth,
     pattern,
@@ -129,7 +129,7 @@ export function* requireAuth<A extends unknown>(
 ): Generator<SelectEffect | TakeEffect, A, A> {
   let authentication: A = yield select(getAuthentication);
 
-  while (!authentication) {
+  while (typeof authentication === "undefined" || authentication === null) {
     yield take(pattern);
     authentication = yield select(getAuthentication);
   }

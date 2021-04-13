@@ -1,4 +1,6 @@
 import { AsyncReturnType } from "type-fest";
+import { Tail, First } from "typescript-tuple";
+
 import {
   EnqueueType,
   RequestType,
@@ -11,8 +13,6 @@ import {
 } from "./constants";
 import { APICallNoParams, APIFunctionMap, EndpointStateMap, GenericAPICall } from "./types/API";
 import { RFSA, RFSE } from "./types/RFSA";
-import { Tail } from "typescript-tuple";
-import { First } from "typescript-tuple";
 
 export type EnqueueParameters<K extends string & keyof M, M extends APIFunctionMap> = Tail<
   Parameters<M[K]>

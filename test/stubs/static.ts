@@ -67,78 +67,78 @@ export const timeoutError = new Error("Waited forever and nothing happened!");
 export const offlineError = new Error("You're not connected to Mr. Internet!");
 
 export const enqueueActionGet: RFSA<"GET_EXAMPLE_ENQUEUE", []> = {
-  type: actionTypes["getExample"].enqueue,
+  type: actionTypes.getExample.enqueue,
   payload: [],
 };
 
 export const requestActionGet: RFSA<"GET_EXAMPLE_REQUEST", []> = {
-  type: actionTypes["getExample"].request,
+  type: actionTypes.getExample.request,
   payload: [],
 };
 
 export const successActionGet: RFSA<"GET_EXAMPLE_SUCCESS", typeof GetResponse> = {
-  type: actionTypes["getExample"].success,
+  type: actionTypes.getExample.success,
   payload: GetResponse,
 };
 
 export const failureActionGet: RFSE<"GET_EXAMPLE_FAILURE", typeof failureError> = {
-  type: actionTypes["getExample"].failure,
+  type: actionTypes.getExample.failure,
   payload: failureError,
   error: true,
 };
 
 export const mistakeActionGet: RFSE<"GET_EXAMPLE_MISTAKE", typeof mistakeError> = {
-  type: actionTypes["getExample"].mistake,
+  type: actionTypes.getExample.mistake,
   payload: mistakeError,
   error: true,
 };
 
 export const timeoutActionGet: RFSE<"GET_EXAMPLE_TIMEOUT", typeof timeoutError> = {
-  type: actionTypes["getExample"].timeout,
+  type: actionTypes.getExample.timeout,
   payload: timeoutError,
   error: true,
 };
 
 export const offlineActionGet: RFSE<"GET_EXAMPLE_OFFLINE", typeof offlineError> = {
-  type: actionTypes["getExample"].offline,
+  type: actionTypes.getExample.offline,
   payload: offlineError,
   error: true,
 };
 export const enqueueActionDelete: RFSA<"DELETE_EXAMPLE_ENQUEUE", [FruitQuantity]> = {
-  type: actionTypes["deleteExample"].enqueue,
+  type: actionTypes.deleteExample.enqueue,
   payload: [ExampleEntity],
 };
 
 export const requestActionDelete: RFSA<"DELETE_EXAMPLE_REQUEST", [true, FruitQuantity]> = {
-  type: actionTypes["deleteExample"].request,
+  type: actionTypes.deleteExample.request,
   payload: [true, ExampleEntity],
 };
 
 export const successActionDelete: RFSA<"DELETE_EXAMPLE_SUCCESS", string> = {
-  type: actionTypes["deleteExample"].success,
+  type: actionTypes.deleteExample.success,
   payload: "Deleted",
 };
 
 export const failureActionDelete: RFSE<"DELETE_EXAMPLE_FAILURE", typeof failureError> = {
-  type: actionTypes["deleteExample"].failure,
+  type: actionTypes.deleteExample.failure,
   payload: failureError,
   error: true,
 };
 
 export const mistakeActionDelete: RFSE<"DELETE_EXAMPLE_MISTAKE", typeof mistakeError> = {
-  type: actionTypes["deleteExample"].mistake,
+  type: actionTypes.deleteExample.mistake,
   payload: mistakeError,
   error: true,
 };
 
 export const timeoutActionDelete: RFSE<"DELETE_EXAMPLE_TIMEOUT", typeof timeoutError> = {
-  type: actionTypes["deleteExample"].timeout,
+  type: actionTypes.deleteExample.timeout,
   payload: timeoutError,
   error: true,
 };
 
 export const offlineActionDelete: RFSE<"DELETE_EXAMPLE_OFFLINE", typeof offlineError> = {
-  type: actionTypes["deleteExample"].offline,
+  type: actionTypes.deleteExample.offline,
   payload: offlineError,
   error: true,
 };

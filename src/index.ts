@@ -1,6 +1,5 @@
 import { ActionCreatorsMap, createActions } from "./actions";
-import { ActionTypeConstantsMap, createTypeConstants, toConstant } from "./constants";
-import { APIFunctionMap } from "./types/API";
+import { ActionTypeConstantsMap, createTypeConstants } from "./constants";
 import {
   APIHandlerMap,
   APIReducer,
@@ -15,8 +14,9 @@ import {
   initialEndpointState,
 } from "./reducers";
 import { createRootSaga, createWatcherSaga, kyRequestSaga, WatcherSagaMap } from "./sagas";
+import { APIFunctionMap } from "./types/API";
 
-export type RASCL<M extends APIFunctionMap> = {
+export interface RASCL<M extends APIFunctionMap> {
   types: ActionTypeConstantsMap<M>;
   actions: ActionCreatorsMap<M>;
   initialState: APIReducerState<M>;
@@ -24,7 +24,7 @@ export type RASCL<M extends APIFunctionMap> = {
   watchers: WatcherSagaMap<M>;
   reducer: APIReducer<M>;
   rootSaga: ReturnType<typeof createRootSaga>;
-};
+}
 
 export const createRASCL = <M extends APIFunctionMap>(functions: M): RASCL<M> => {
   const names: Array<keyof M & string> = Object.keys(functions);
