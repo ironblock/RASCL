@@ -4,6 +4,7 @@ import {
   FailureAction,
   MistakeAction,
   OfflineAction,
+  EnqueueAction,
   RequestAction,
   SuccessAction,
   TimeoutAction,
@@ -12,6 +13,7 @@ import {
   FailureType,
   MistakeType,
   OfflineType,
+  EnqueueType,
   RequestType,
   SuccessType,
   TimeoutType,
@@ -28,6 +30,7 @@ export interface EndpointMetadata {
 export interface EndpointData<K extends string, M extends APIFunctionMap>
   extends EndpointStateMap,
     EndpointMetadata {
+  enqueue: EnqueueAction<K, M>["payload"] | null;
   request: RequestAction<K, M>["payload"] | null;
   success: SuccessAction<K, M>["payload"] | null;
   failure: FailureAction<K, M>["payload"] | null;
@@ -47,11 +50,17 @@ export interface APIReducer<M extends APIFunctionMap> extends Reducer {
 export type APIHandlerMap<M extends APIFunctionMap> = {
   [K: string]: APIReducer<M>;
 } & {
-  [RT in string as RequestType<RT>]: (
+  [ET in string as EnqueueType<ET>]: (
     draft: APIReducerState<M>,
-    action: RequestAction<RT, M>,
+    action: EnqueueAction<ET, M>,
   ) => void;
 } &
+  {
+    [RT in string as RequestType<RT>]: (
+      draft: APIReducerState<M>,
+      action: RequestAction<RT, M>,
+    ) => void;
+  } &
   {
     [ST in string as SuccessType<ST>]: (
       draft: APIReducerState<M>,
@@ -95,6 +104,7 @@ export const createReducer = <M extends APIFunctionMap>(
 };
 
 export const initialEndpointState: EndpointData<any, any> = Object.freeze({
+  enqueue: null,
   request: null,
   success: null,
   failure: null,
@@ -106,11 +116,24 @@ export const initialEndpointState: EndpointData<any, any> = Object.freeze({
   lastResult: null,
 });
 
+export const handleEnqueue = <K extends string & keyof M, M extends APIFunctionMap>(
+  name: K,
+  draft: APIReducerState<M>,
+  action: EnqueueAction<K, M>,
+): void => {
+  draft[name].enqueue = action.payload;
+  draft[name].request = null;
+  draft[name].isFetching = true;
+  draft[name].lastUpdate = Date.now();
+  draft[name].lastResult = "enqueue";
+};
+
 export const handleRequest = <K extends string & keyof M, M extends APIFunctionMap>(
   name: K,
   draft: APIReducerState<M>,
   action: RequestAction<K, M>,
 ): void => {
+  draft[name].enqueue = null;
   draft[name].request = action.payload;
   draft[name].isFetching = true;
   draft[name].lastUpdate = Date.now();
@@ -134,6 +157,9 @@ export const handleFailure = <K extends string & keyof M, M extends APIFunctionM
   action: FailureAction<K, M>,
 ): void => {
   draft[name].failure = action.payload ?? null;
+  draft[name].mistake = null;
+  draft[name].timeout = null;
+  draft[name].offline = null;
   draft[name].isFetching = false;
   draft[name].lastUpdate = Date.now();
   draft[name].lastResult = "failure";
@@ -143,7 +169,10 @@ export const handleMistake = <K extends string & keyof M, M extends APIFunctionM
   draft: APIReducerState<M>,
   action: MistakeAction<K, M>,
 ): void => {
+  draft[name].failure = null;
   draft[name].mistake = action.payload ?? null;
+  draft[name].timeout = null;
+  draft[name].offline = null;
   draft[name].isFetching = false;
   draft[name].lastUpdate = Date.now();
   draft[name].lastResult = "mistake";
@@ -154,7 +183,10 @@ export const handleTimeout = <K extends string & keyof M, M extends APIFunctionM
   draft: APIReducerState<M>,
   action: TimeoutAction<K, M>,
 ): void => {
+  draft[name].failure = null;
+  draft[name].mistake = null;
   draft[name].timeout = action.payload ?? null;
+  draft[name].offline = null;
   draft[name].isFetching = false;
   draft[name].lastUpdate = Date.now();
   draft[name].lastResult = "timeout";
@@ -165,6 +197,9 @@ export const handleOffline = <K extends string & keyof M, M extends APIFunctionM
   draft: APIReducerState<M>,
   action: OfflineAction<K, M>,
 ): void => {
+  draft[name].failure = null;
+  draft[name].mistake = null;
+  draft[name].timeout = null;
   draft[name].offline = action.payload ?? null;
   draft[name].isFetching = false;
   draft[name].lastUpdate = Date.now();

@@ -1,5 +1,6 @@
 export const GetResponse = ["apples", "bananas", "coconuts"] as const;
-export type ExampleEntity = {
+export type FruitQuantity = {
   fruit: typeof GetResponse[number];
   quantity: number;
 };
+export const ExampleEntity: FruitQuantity = { fruit: "bananas", quantity: 99 };

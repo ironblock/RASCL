@@ -3,9 +3,9 @@ import { ActionTypeConstantsMap } from "../../src/constants";
 import { APIReducerState, initialEndpointState } from "../../src/reducers";
 import { RFSA, RFSE } from "../../src/types/RFSA";
 import * as ExampleAPI from "./apiKy";
-import { GetResponse } from "./response";
+import { ExampleEntity, FruitQuantity, GetResponse } from "./entities";
 
-const INITIAL_STATE: APIReducerState<typeof ExampleAPI> = {
+export const INITIAL_STATE: APIReducerState<typeof ExampleAPI> = {
   getExample: initialEndpointState,
   putExample: initialEndpointState,
   postExample: initialEndpointState,
@@ -15,6 +15,7 @@ const INITIAL_STATE: APIReducerState<typeof ExampleAPI> = {
 
 export const actionTypes: ActionTypeConstantsMap<typeof ExampleAPI> = {
   getExample: {
+    enqueue: "GET_EXAMPLE_ENQUEUE",
     request: "GET_EXAMPLE_REQUEST",
     success: "GET_EXAMPLE_SUCCESS",
     failure: "GET_EXAMPLE_FAILURE",
@@ -23,6 +24,7 @@ export const actionTypes: ActionTypeConstantsMap<typeof ExampleAPI> = {
     offline: "GET_EXAMPLE_OFFLINE",
   },
   putExample: {
+    enqueue: "PUT_EXAMPLE_ENQUEUE",
     request: "PUT_EXAMPLE_REQUEST",
     success: "PUT_EXAMPLE_SUCCESS",
     failure: "PUT_EXAMPLE_FAILURE",
@@ -31,6 +33,7 @@ export const actionTypes: ActionTypeConstantsMap<typeof ExampleAPI> = {
     offline: "PUT_EXAMPLE_OFFLINE",
   },
   postExample: {
+    enqueue: "POST_EXAMPLE_ENQUEUE",
     request: "POST_EXAMPLE_REQUEST",
     success: "POST_EXAMPLE_SUCCESS",
     failure: "POST_EXAMPLE_FAILURE",
@@ -39,6 +42,7 @@ export const actionTypes: ActionTypeConstantsMap<typeof ExampleAPI> = {
     offline: "POST_EXAMPLE_OFFLINE",
   },
   patchExample: {
+    enqueue: "PATCH_EXAMPLE_ENQUEUE",
     request: "PATCH_EXAMPLE_REQUEST",
     success: "PATCH_EXAMPLE_SUCCESS",
     failure: "PATCH_EXAMPLE_FAILURE",
@@ -47,6 +51,7 @@ export const actionTypes: ActionTypeConstantsMap<typeof ExampleAPI> = {
     offline: "PATCH_EXAMPLE_OFFLINE",
   },
   deleteExample: {
+    enqueue: "DELETE_EXAMPLE_ENQUEUE",
     request: "DELETE_EXAMPLE_REQUEST",
     success: "DELETE_EXAMPLE_SUCCESS",
     failure: "DELETE_EXAMPLE_FAILURE",
@@ -56,49 +61,107 @@ export const actionTypes: ActionTypeConstantsMap<typeof ExampleAPI> = {
   },
 };
 
-export const requestAction: RFSA<"GET_EXAMPLE_REQUEST", []> = {
+export const failureError = new Error("The server goofed!");
+export const mistakeError = new Error("You goofed!");
+export const timeoutError = new Error("Waited forever and nothing happened!");
+export const offlineError = new Error("You're not connected to Mr. Internet!");
+
+export const enqueueActionGet: RFSA<"GET_EXAMPLE_ENQUEUE", []> = {
+  type: actionTypes["getExample"].enqueue,
+  payload: [],
+};
+
+export const requestActionGet: RFSA<"GET_EXAMPLE_REQUEST", []> = {
   type: actionTypes["getExample"].request,
   payload: [],
 };
 
-export const successAction: RFSA<"GET_EXAMPLE_SUCCESS", typeof GetResponse> = {
+export const successActionGet: RFSA<"GET_EXAMPLE_SUCCESS", typeof GetResponse> = {
   type: actionTypes["getExample"].success,
   payload: GetResponse,
 };
 
-export const failureError = new Error("The server goofed!");
-export const failureAction: RFSE<"GET_EXAMPLE_FAILURE", typeof failureError> = {
+export const failureActionGet: RFSE<"GET_EXAMPLE_FAILURE", typeof failureError> = {
   type: actionTypes["getExample"].failure,
   payload: failureError,
   error: true,
 };
 
-export const mistakeError = new Error("You goofed!");
-export const mistakeAction: RFSE<"GET_EXAMPLE_MISTAKE", typeof mistakeError> = {
+export const mistakeActionGet: RFSE<"GET_EXAMPLE_MISTAKE", typeof mistakeError> = {
   type: actionTypes["getExample"].mistake,
   payload: mistakeError,
   error: true,
 };
 
-export const timeoutError = new Error("Waited forever and nothing happened!");
-export const timeoutAction: RFSE<"GET_EXAMPLE_TIMEOUT", typeof timeoutError> = {
+export const timeoutActionGet: RFSE<"GET_EXAMPLE_TIMEOUT", typeof timeoutError> = {
   type: actionTypes["getExample"].timeout,
   payload: timeoutError,
   error: true,
 };
 
-export const offlineError = new Error("You're not connected to Mr. Internet!");
-export const offlineAction: RFSE<"GET_EXAMPLE_OFFLINE", typeof offlineError> = {
+export const offlineActionGet: RFSE<"GET_EXAMPLE_OFFLINE", typeof offlineError> = {
   type: actionTypes["getExample"].offline,
   payload: offlineError,
   error: true,
 };
+export const enqueueActionDelete: RFSA<"DELETE_EXAMPLE_ENQUEUE", [FruitQuantity]> = {
+  type: actionTypes["deleteExample"].enqueue,
+  payload: [ExampleEntity],
+};
 
-export const createMockActionCreators = (): ActionCreators<"getExample", typeof ExampleAPI> => ({
-  request: jest.fn(() => requestAction),
-  success: jest.fn(() => successAction),
-  failure: jest.fn(() => failureAction),
-  mistake: jest.fn(() => mistakeAction),
-  timeout: jest.fn(() => timeoutAction),
-  offline: jest.fn(() => offlineAction),
+export const requestActionDelete: RFSA<"DELETE_EXAMPLE_REQUEST", [true, FruitQuantity]> = {
+  type: actionTypes["deleteExample"].request,
+  payload: [true, ExampleEntity],
+};
+
+export const successActionDelete: RFSA<"DELETE_EXAMPLE_SUCCESS", string> = {
+  type: actionTypes["deleteExample"].success,
+  payload: "Deleted",
+};
+
+export const failureActionDelete: RFSE<"DELETE_EXAMPLE_FAILURE", typeof failureError> = {
+  type: actionTypes["deleteExample"].failure,
+  payload: failureError,
+  error: true,
+};
+
+export const mistakeActionDelete: RFSE<"DELETE_EXAMPLE_MISTAKE", typeof mistakeError> = {
+  type: actionTypes["deleteExample"].mistake,
+  payload: mistakeError,
+  error: true,
+};
+
+export const timeoutActionDelete: RFSE<"DELETE_EXAMPLE_TIMEOUT", typeof timeoutError> = {
+  type: actionTypes["deleteExample"].timeout,
+  payload: timeoutError,
+  error: true,
+};
+
+export const offlineActionDelete: RFSE<"DELETE_EXAMPLE_OFFLINE", typeof offlineError> = {
+  type: actionTypes["deleteExample"].offline,
+  payload: offlineError,
+  error: true,
+};
+
+export const createActionCreatorsGet = (): ActionCreators<"getExample", typeof ExampleAPI> => ({
+  enqueue: jest.fn(() => enqueueActionGet),
+  request: jest.fn(() => requestActionGet),
+  success: jest.fn(() => successActionGet),
+  failure: jest.fn(() => failureActionGet),
+  mistake: jest.fn(() => mistakeActionGet),
+  timeout: jest.fn(() => timeoutActionGet),
+  offline: jest.fn(() => offlineActionGet),
+});
+
+export const createActionCreatorsDelete = (): ActionCreators<
+  "deleteExample",
+  typeof ExampleAPI
+> => ({
+  enqueue: jest.fn(() => enqueueActionDelete),
+  request: jest.fn(() => requestActionDelete),
+  success: jest.fn(() => successActionDelete),
+  failure: jest.fn(() => failureActionDelete),
+  mistake: jest.fn(() => mistakeActionDelete),
+  timeout: jest.fn(() => timeoutActionDelete),
+  offline: jest.fn(() => offlineActionDelete),
 });

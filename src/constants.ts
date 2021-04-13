@@ -5,6 +5,7 @@ import { RASCL } from ".";
 
 export type ConstantCase<S extends string> = Uppercase<SnakeCase<S>>;
 
+export type EnqueueType<S extends string> = `${ConstantCase<S>}_ENQUEUE`;
 export type RequestType<S extends string> = `${ConstantCase<S>}_REQUEST`;
 export type SuccessType<S extends string> = `${ConstantCase<S>}_SUCCESS`;
 export type FailureType<S extends string> = `${ConstantCase<S>}_FAILURE`;
@@ -13,6 +14,7 @@ export type TimeoutType<S extends string> = `${ConstantCase<S>}_TIMEOUT`;
 export type OfflineType<S extends string> = `${ConstantCase<S>}_OFFLINE`;
 
 export type ActionTypeConstants<S extends string> = {
+  readonly enqueue: EnqueueType<S>;
   readonly request: RequestType<S>;
   readonly success: SuccessType<S>;
   readonly failure: FailureType<S>;
@@ -31,6 +33,7 @@ export const toConstant = <S extends string>(input: S): ConstantCase<S> =>
 export const createTypeConstants = <M extends APIFunctionMap, K extends keyof M & string>(
   name: K,
 ): RASCL<M>["types"][K] => ({
+  enqueue: `${toConstant(name)}_ENQUEUE` as const,
   request: `${toConstant(name)}_REQUEST` as const,
   success: `${toConstant(name)}_SUCCESS` as const,
   failure: `${toConstant(name)}_FAILURE` as const,

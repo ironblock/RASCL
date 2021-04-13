@@ -16,11 +16,24 @@ import {
 } from "redux-saga/effects";
 
 import ky from "ky";
-import { APICallNoParams, APICallWithParams, APIFunctionMap } from "./types/API";
-import { ActionCreatorsMap, RequestAction } from "./actions";
+import {
+  APICallNoParams,
+  APICallWithAuthentication,
+  APICallWithParams,
+  APIFunctionMap,
+  APIFunctionMapWithAuthentication,
+} from "./types/API";
+import {
+  ActionCreatorsMap,
+  doesNotUseParams,
+  EnqueueAction,
+  RequestAction,
+  RequestParameters,
+} from "./actions";
 import { RequestType } from "./constants";
 import { AsyncReturnType } from "type-fest";
 import { Action } from "redux";
+import { Prepend, First, Tail } from "typescript-tuple";
 
 const unknownError = new Error("An error of an unknown type occurred");
 
@@ -42,9 +55,9 @@ export function* kyRequestSaga<K extends string & keyof M, M extends APIFunction
   { payload }: RequestAction<K, M>,
 ): Generator<StrictEffect, void, AsyncReturnType<M[K]>> {
   try {
-    const response = yield Array.isArray(payload)
-      ? call<APICallWithParams>(request, ...payload)
-      : call<APICallNoParams>(request);
+    const response = yield doesNotUseParams(request, payload)
+      ? call<APICallNoParams>(request)
+      : call<APICallWithParams | APICallWithAuthentication>(request, ...payload);
 
     yield put(actionCreators.success(response));
   } catch (error) {
@@ -78,23 +91,25 @@ export function* kyRequestSaga<K extends string & keyof M, M extends APIFunction
 }
 
 export function* kyPrivateRequestSaga<
-  A extends unknown,
   K extends string & keyof M,
-  M extends APIFunctionMap
+  M extends APIFunctionMapWithAuthentication
 >(
   pattern: ActionPattern<Action<any>>,
-  getAuthentication: () => A,
+  getAuthentication: () => First<Parameters<M[K]>>,
   request: M[K],
   actionCreators: ActionCreatorsMap<M>[K],
-  action: RequestAction<K, M>,
-): Generator<ForkEffect<unknown>, void, A> {
-  const authentication: A = yield fork(requireAuth, pattern, getAuthentication);
-  const authorizedAction: RequestAction<K, M> = {
-    ...action,
-    payload: [authentication, ...action.payload],
-  };
+  { payload }: EnqueueAction<K, M>,
+) {
+  const authentication: First<Parameters<M[K]>> = yield fork(
+    requireAuth,
+    pattern,
+    getAuthentication,
+  );
+  const authorizedPayload: Prepend<typeof payload, typeof authentication> &
+    RequestParameters<K, M> = [authentication, ...(payload ?? [])];
+  const authorizedRequest = actionCreators.request(authorizedPayload);
 
-  yield fork(kyRequestSaga, request, actionCreators, authorizedAction);
+  yield fork(kyRequestSaga, request, actionCreators, authorizedRequest);
 }
 
 /**

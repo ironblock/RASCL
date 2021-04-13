@@ -3,7 +3,7 @@ import { ActionCreatorsMap, createActions } from "../src/actions";
 import { createTypeConstants } from "../src/constants";
 import { RFSA, RFSE } from "../src/types/RFSA";
 import * as ExampleAPI from "./stubs/apiKy";
-import { ExampleEntity, GetResponse } from "./stubs/response";
+import { ExampleEntity, FruitQuantity, GetResponse } from "./stubs/entities";
 
 const getTypes = createTypeConstants<typeof ExampleAPI, "getExample">("getExample");
 const getActions: ActionCreatorsMap<typeof ExampleAPI>["getExample"] = createActions<
@@ -70,15 +70,13 @@ describe("Action Creators", () => {
   });
 
   it("correctly generates actions containing function arguments", () => {
-    const entity: ExampleEntity = {
-      fruit: "bananas",
-      quantity: 99,
-    };
-    const post: RFSA<"POST_EXAMPLE_REQUEST", [ExampleEntity]> = postActions.request([entity]);
+    const post: RFSA<"POST_EXAMPLE_REQUEST", [FruitQuantity]> = postActions.request([
+      ExampleEntity,
+    ]);
 
     expect(post).toMatchObject({
       type: "POST_EXAMPLE_REQUEST",
-      payload: [entity],
+      payload: [ExampleEntity],
     });
   });
 });
