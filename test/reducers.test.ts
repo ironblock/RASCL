@@ -1,7 +1,7 @@
 import produce from "immer";
 import "jest";
 import {
-  APIReducerState,
+  handleEnqueue,
   handleRequest,
   handleSuccess,
   handleFailure,
@@ -11,6 +11,7 @@ import {
   initialEndpointState,
 } from "../src/reducers";
 import {
+  enqueueActionDelete,
   requestActionGet,
   successActionGet,
   failureActionGet,
@@ -21,16 +22,10 @@ import {
   mistakeError,
   offlineError,
   timeoutError,
+  INITIAL_STATE,
 } from "./stubs/static";
 import * as ExampleAPI from "./stubs/apiKy";
-
-const INITIAL_STATE: APIReducerState<typeof ExampleAPI> = {
-  getExample: initialEndpointState,
-  putExample: initialEndpointState,
-  postExample: initialEndpointState,
-  patchExample: initialEndpointState,
-  deleteExample: initialEndpointState,
-};
+import { ExampleEntity } from "./stubs/entities";
 
 let mockedDateNow: jest.SpyInstance<number, []>;
 
@@ -43,6 +38,42 @@ describe("API Reducers", () => {
 
   afterAll(() => {
     mockedDateNow?.mockRestore();
+  });
+
+  it("handles ENQUEUE actions", () => {
+    const handledEnqueue = produce(INITIAL_STATE, (draft) => {
+      handleEnqueue<"deleteExample", typeof ExampleAPI>(
+        "deleteExample",
+        draft,
+        enqueueActionDelete,
+      );
+    });
+
+    expect(handledEnqueue).toMatchObject({
+      deleteExample: {
+        ...initialEndpointState,
+        enqueue: [ExampleEntity],
+        isFetching: true,
+        lastUpdate: Date.now(),
+        lastResult: "enqueue",
+      },
+    });
+  });
+
+  it("handles REQUEST actions", () => {
+    const handledRequest = produce(INITIAL_STATE, (draft) => {
+      handleRequest<"getExample", typeof ExampleAPI>("getExample", draft, requestActionGet);
+    });
+
+    expect(handledRequest).toMatchObject({
+      getExample: {
+        ...initialEndpointState,
+        request: [],
+        isFetching: true,
+        lastUpdate: Date.now(),
+        lastResult: "request",
+      },
+    });
   });
 
   it("handles REQUEST actions", () => {

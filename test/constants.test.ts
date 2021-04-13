@@ -6,6 +6,7 @@ describe("Action Type Constants", () => {
   it("creates all action type constants for a given input", () => {
     const actionTypes = createTypeConstants<typeof ExampleAPI, "getExample">("getExample");
 
+    expect(actionTypes.enqueue).toBe("GET_EXAMPLE_ENQUEUE");
     expect(actionTypes.request).toBe("GET_EXAMPLE_REQUEST");
     expect(actionTypes.success).toBe("GET_EXAMPLE_SUCCESS");
     expect(actionTypes.failure).toBe("GET_EXAMPLE_FAILURE");
