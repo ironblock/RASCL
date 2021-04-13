@@ -68,12 +68,6 @@ describe("Action Creators", () => {
     expect(request).toMatchObject({ type: "GET_EXAMPLE_REQUEST", payload: [] });
   });
 
-  it("generates REQUEST action with the correct shape", () => {
-    const request = getActions.request([]);
-
-    expect(request).toMatchObject({ type: "GET_EXAMPLE_REQUEST", payload: [] });
-  });
-
   it("generates SUCCESS action with the correct shape", () => {
     const success: RFSA<"GET_EXAMPLE_SUCCESS", Readonly<typeof GetResponse>> = getActions.success(
       GetResponse,

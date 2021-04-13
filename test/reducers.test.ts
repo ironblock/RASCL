@@ -76,22 +76,6 @@ describe("API Reducers", () => {
     });
   });
 
-  it("handles REQUEST actions", () => {
-    const handledRequest = produce(INITIAL_STATE, (draft) => {
-      handleRequest<"getExample", typeof ExampleAPI>("getExample", draft, requestActionGet);
-    });
-
-    expect(handledRequest).toMatchObject({
-      getExample: {
-        ...initialEndpointState,
-        request: [],
-        isFetching: true,
-        lastUpdate: Date.now(),
-        lastResult: "request",
-      },
-    });
-  });
-
   it("handles SUCCESS actions", () => {
     const handledSuccess = produce(INITIAL_STATE, (draft) => {
       handleSuccess<"getExample", typeof ExampleAPI>("getExample", draft, successActionGet);
