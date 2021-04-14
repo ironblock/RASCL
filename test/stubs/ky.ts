@@ -26,19 +26,3 @@ export const kyOfflineError = new ky.HTTPError(
   kyRequest,
   kyOptions,
 );
-
-export const makeKyHTTPError500 = () => {
-  throw kyHTTPError500;
-};
-export const makeKyHTTPError400 = () => {
-  throw kyHTTPError400;
-};
-export const makeKyHTTPErrorUnknown = () => {
-  throw kyHTTPErrorUnknown;
-};
-export const makeKyTimeoutError = () => {
-  throw kyTimeoutError;
-};
-export const makeKyOfflineError = () => {
-  throw kyOfflineError;
-};
