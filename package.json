@@ -29,7 +29,8 @@
     "lint": "eslint --ext .ts,.tsx,.test.ts .",
     "lint:fix": "yarn run lint --fix",
     "test": "jest --env=node --colors --coverage --verbose",
-    "test:prod": "npm run lint && npm run test -- --no-cache"
+    "test:prod": "npm run lint && npm run test --no-cache",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/eslint": "^7.2.9",

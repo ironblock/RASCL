@@ -4,7 +4,6 @@
 
 import "jest";
 import { expectSaga } from "redux-saga-test-plan";
-import * as matchers from "redux-saga-test-plan/matchers";
 import { select, take } from "redux-saga/effects";
 
 import { requireAuth } from "../../src/sagas";

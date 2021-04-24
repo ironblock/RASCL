@@ -33,7 +33,7 @@
     // "outFile": "./",
 
     /* Redirect output structure to the directory. */
-    // "outDir": "./",
+    "outDir": "./dist",
 
     /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "rootDir": "./",
