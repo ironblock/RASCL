@@ -10,16 +10,14 @@ The **Redux API State Caching Layer** (RASCL) is a pattern used by webapps to in
 
 The goal of a RASCL implementation is to create [highly cohesive](https://en.wikipedia.org/wiki/Cohesion_%28computer_science%29#High_cohesion) and [loosely coupled](https://en.wikipedia.org/wiki/Loose_coupling) interfaces to an API client. To do this, each API endpoint is treated as a globally unique [finite state machine](https://en.wikipedia.org/wiki/Finite-state_machine). The consuming application makes API requests indirectly by dispatching actions, and accesses the returned data indirectly with selector functions.
 
-<figure>
+<figure align="center">
   <img
     src="docs/media/RASCL%20State%20Diagram.svg"
     alt="RASCL State Diagram"
     height="320px"
     width="100%"
   />
-  <figcaption
-    align="center"
-  >
+  <figcaption>
     <i>An API endpoint's state transitions</i>
   </figcaption>
 </figure>
