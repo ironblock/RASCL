@@ -55,4 +55,5 @@ interface Data {
 type EndpointStateShape = EndpointMetadata & EndpointData;
 ```
 
-<sub>_**NOTE**: This is a simplified example of the TypeScript interfaces for illustrative purposes. For the actual implementations used by this library, see [reducers.ts](./src/reducers.ts)_</sub>
+<sub>_**NOTE**: These interfaces are simplified examples for illustrative purposes.\
+For the actual TypeScript implementations used by this library, see [reducers.ts](./src/reducers.ts)_</sub>
