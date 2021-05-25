@@ -1,18 +1,23 @@
 {
   "name": "rascl",
-  "version": "0.1.0",
+  "version": "1.0.0-rc.0",
   "description": "Redux API State Caching Layer",
   "keywords": [
     "redux",
+    "redux-saga",
     "typescript"
   ],
   "type": "module",
-  "module": "src/index.ts",
-  "typings": "src/index.d.ts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "author": "Corey Vixie",
+  "author": {
+    "name" : "Corey Vixie",
+    "email" : "corey@vixie.enterprises",
+    "url" : "https://twitter.com/corey"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ironblock/RASCL.git"
@@ -23,14 +28,21 @@
   "homepage": "https://github.com/ironblock/RASCL#readme",
   "license": "BSD-2-Clause",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=14.0.0",
+    "npm": ">=6.14.11",
+    "yarn": ">=1.22.5"
   },
   "scripts": {
     "lint": "eslint --ext .ts,.tsx,.test.ts .",
-    "lint:fix": "yarn run lint --fix",
-    "test": "jest --env=node --colors --coverage --verbose",
-    "test:prod": "npm run lint && npm run test --no-cache",
-    "build": "tsc"
+    "lint:fix": "npm run lint -- --fix",
+    "jest": "jest --env=node --colors --coverage --verbose",
+    "build": "tsc",
+
+    "test": "npm run jest",
+    "posttest": "npm run lint",
+
+    "prepublishOnly": "npm test",
+    "prepack": "npm run build"
   },
   "devDependencies": {
     "@types/eslint": "^7.2.9",
