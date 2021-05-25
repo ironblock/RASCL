@@ -15,6 +15,7 @@ import {
   takeLatest,
   SelectEffect,
   TakeEffect,
+  Effect,
 } from "redux-saga/effects";
 import { AsyncReturnType } from "type-fest";
 import { Prepend, First } from "typescript-tuple";
@@ -26,7 +27,7 @@ import {
   RequestAction,
   RequestParameters,
 } from "./actions";
-import { RequestType } from "./constants";
+import { EnqueueType, RequestType } from "./constants";
 import {
   APICallNoParams,
   APICallWithAuthentication,
@@ -37,8 +38,13 @@ import {
 
 const unknownError = new Error("An error of an unknown type occurred");
 
+export type WatcherSaga<K extends string & keyof M, M extends APIFunctionMap> = (
+  request: M[K],
+  actionCreators: ActionCreatorsMap<M>[K],
+  ...params: any
+) => Generator<Effect<EnqueueType<K> | RequestType<K>>, void, any>;
 export type WatcherSagaMap<M extends APIFunctionMap> = {
-  [K in string & keyof M]: () => Generator<StrictEffect, void, void>;
+  [K in string & keyof M]: WatcherSaga<K, M>;
 };
 
 /**
@@ -94,11 +100,11 @@ export function* kyPrivateRequestSaga<
   K extends string & keyof M,
   M extends APIFunctionMapWithAuthentication
 >(
-  pattern: ActionPattern<Action<any>>,
-  getAuthentication: () => First<Parameters<M[K]>>,
   request: M[K],
   actionCreators: ActionCreatorsMap<M>[K],
   { payload }: EnqueueAction<K, M>,
+  pattern: ActionPattern<Action<any>>,
+  getAuthentication: () => First<Parameters<M[K]>>,
 ): Generator<ForkEffect<unknown>, void, First<Parameters<M[K]>>> {
   const authentication: First<Parameters<M[K]>> = yield fork(
     requireAuth,
@@ -137,14 +143,15 @@ export function* requireAuth<A extends unknown>(
   return authentication;
 }
 
-export const createWatcherSaga = <S extends string & keyof M, M extends APIFunctionMap>(
-  requestSaga: any,
-  requestType: RequestType<S>,
-  request: M[S],
-  actionCreators: ActionCreatorsMap<M>[S],
+export const createWatcherSaga = <K extends string & keyof M, M extends APIFunctionMap>(
+  requestType: RequestType<K>,
+  requestSaga: WatcherSaga<K, M>,
+  request: M[K],
+  actionCreators: ActionCreatorsMap<M>[K],
+  ...args: any
 ): (() => Generator<StrictEffect, void, void>) =>
   function* watcherSaga() {
-    yield takeLatest(requestType, requestSaga, request, actionCreators);
+    yield takeLatest(requestType, requestSaga, request, actionCreators, ...args);
   };
 
 export function* createRootSaga<M extends APIFunctionMap>(

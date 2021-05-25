@@ -13,7 +13,13 @@ import {
   handleTimeout,
   initialEndpointState,
 } from "./reducers";
-import { createRootSaga, createWatcherSaga, kyRequestSaga, WatcherSagaMap } from "./sagas";
+import {
+  createRootSaga,
+  createWatcherSaga,
+  kyRequestSaga,
+  WatcherSaga,
+  WatcherSagaMap,
+} from "./sagas";
 import { APIFunctionMap } from "./types/API";
 
 export interface RASCL<M extends APIFunctionMap> {
@@ -26,7 +32,21 @@ export interface RASCL<M extends APIFunctionMap> {
   rootSaga: ReturnType<typeof createRootSaga>;
 }
 
-export const createRASCL = <M extends APIFunctionMap>(functions: M): RASCL<M> => {
+export interface Options<M extends APIFunctionMap> {
+  defaultWatcher: WatcherSaga<keyof M & string, M>;
+  watchers: { [k in keyof M]: WatcherSaga<keyof M & string, M> };
+}
+
+export const defaultOptions: Options<any> = {
+  defaultWatcher: kyRequestSaga,
+  watchers: {},
+};
+
+export const createRASCL = <M extends APIFunctionMap>(
+  functions: M,
+  options?: Options<M>,
+): RASCL<M> => {
+  const selectedOptions = { ...defaultOptions, ...options };
   const names: Array<keyof M & string> = Object.keys(functions);
 
   const types: Partial<RASCL<M>["types"]> = {};
@@ -57,8 +77,8 @@ export const createRASCL = <M extends APIFunctionMap>(functions: M): RASCL<M> =>
 
     // SAGAS
     watchers[name] = createWatcherSaga(
-      kyRequestSaga,
       typeConstants.request,
+      watchers[name] ?? selectedOptions.defaultWatcher,
       functions[name],
       actions[name] as ActionCreatorsMap<M>[typeof name],
     );

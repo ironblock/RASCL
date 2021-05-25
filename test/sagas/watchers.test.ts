@@ -23,7 +23,7 @@ describe("Watcher Sagas", () => {
     };
     const actionType = actionTypes.getExample.request;
     const apiCall = ExampleAPI.getExample;
-    const watcher = createWatcherSaga(saga, actionType, apiCall, actionCreatorsGet);
+    const watcher = createWatcherSaga(actionType, saga, apiCall, actionCreatorsGet);
 
     testSaga(watcher)
       .next()

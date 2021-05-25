@@ -157,11 +157,11 @@ describe("Sagas using Ky", () => {
 
     testSaga(() =>
       kyPrivateRequestSaga<"deleteExample", typeof ExampleAPI>(
-        actionType,
-        getAuthentication,
         ExampleAPI.deleteExample,
         actionCreatorsDelete,
         enqueueActionDelete,
+        actionType,
+        getAuthentication,
       ),
     )
       .next()
