@@ -8,7 +8,8 @@
 
 ![npm](https://img.shields.io/npm/v/rascl?style=flat-square)
 ![Codecov](https://img.shields.io/codecov/c/github/ironblock/rascl?style=flat-square)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ironblock/rascl/RASCL%20CI/develop?label=Develop%20build&style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ironblock/rascl/RASCL%20CI/develop?label=develop&style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ironblock/rascl/RASCL%20CI/master?label=master&style=flat-square)
 
 RASCL is a way for webapps to use [Redux](https://redux.js.org) and [Redux-Saga](https://redux-saga.js.org/) to interact with APIs - without the boilerplate!
 
@@ -21,19 +22,19 @@ Once configured, a webapp using RASCL only needs to do two things:
 
 ## How RASCL Works
 
-RASCL tracks the "lifecycle" of each API call as a [finite state machine](https://en.wikipedia.org/wiki/Finite-state_machine). This helps with a lot of common patterns, like "show the user a spinner while waiting for the API" and "don't make requests until the user is authenticated".
+RASCL tracks the "lifecycle" of each API call as a [finite state machine](https://en.wikipedia.org/wiki/Finite-state_machine). This helps with a lot of common patterns, like "show the user a spinner while waiting for the API" and "don't make requests until the user is authenticated or while the network is offline".
 
-<center>
-   <figure>
-     <img
-       src="docs/media/RASCL%20State%20Diagram.svg"
-       alt="RASCL State Diagram"
-       height="320px"
-       width="100%"
-     />
-     <figcaption><i>An API endpoint's state transitions</i></figcaption>
-   </figure>
-</center>
+<p align="center">
+  <img
+    src="docs/media/RASCL%20State%20Diagram.svg"
+    alt="RASCL State Diagram"
+    width="100%"
+    height="275px"
+  />
+  <i>An API endpoint's state transitions</i>
+  <br />     
+  <br />
+</p>
 
 Each endpoint starts with the same state.
 <dl>
