@@ -29,20 +29,22 @@
   "license": "BSD-2-Clause",
   "engines": {
     "node": ">=14.0.0",
-    "npm": ">=6.14.11",
     "yarn": ">=1.22.5"
   },
   "scripts": {
+    "preci": "rm -rf node_modules",
+    "ci": "yarn install --frozen-lockfile",
+
     "lint": "eslint --ext .ts,.tsx,.test.ts .",
-    "lint:fix": "npm run lint -- --fix",
+    "lint:fix": "yarn lint --fix",
     "jest": "jest --env=node --colors --coverage --verbose",
     "build": "tsc",
 
-    "test": "npm run jest",
-    "posttest": "npm run lint",
+    "test": "yarn jest",
+    "posttest": "yarn lint",
 
-    "prepublishOnly": "npm test",
-    "prepack": "npm run build"
+    "prepublishOnly": "yarn test",
+    "prepack": "yarn build"
   },
   "devDependencies": {
     "@types/eslint": "^7.2.9",
