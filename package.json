@@ -1,15 +1,18 @@
 {
   "name": "rascl",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.1",
   "description": "Redux API State Caching Layer",
-  "keywords": [
-    "redux",
-    "redux-saga",
-    "typescript"
-  ],
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ironblock/RASCL.git"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "yarn": ">=1.22.5"
+  },
   "type": "module",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "exports": "./dist/index.js",
   "files": [
     "dist"
   ],
@@ -18,19 +21,15 @@
     "email" : "corey@vixie.enterprises",
     "url" : "https://twitter.com/corey"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ironblock/RASCL.git"
-  },
   "bugs": {
     "url": "https://github.com/ironblock/RASCL/issues"
   },
   "homepage": "https://github.com/ironblock/RASCL#readme",
-  "license": "BSD-2-Clause",
-  "engines": {
-    "node": ">=14.0.0",
-    "yarn": ">=1.22.5"
-  },
+  "keywords": [
+    "redux",
+    "redux-saga",
+    "typescript"
+  ],
   "scripts": {
     "preci": "rm -rf node_modules",
     "ci": "yarn install --frozen-lockfile",
