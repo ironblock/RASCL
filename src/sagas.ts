@@ -154,22 +154,23 @@ export const createWatcherSaga = <K extends string & keyof M, M extends APIFunct
     yield takeLatest(requestType, requestSaga, request, actionCreators, ...args);
   };
 
-export function* createRootSaga<M extends APIFunctionMap>(
+export const createRootSaga = <M extends APIFunctionMap>(
   sagas: WatcherSagaMap<M>,
-): Generator<AllEffect<ForkEffect<void>>, void, unknown> {
-  yield all(
-    Object.entries(sagas).map(([name, saga]) =>
-      spawn(function* () {
-        while (true) {
-          try {
-            yield call(saga);
-            break;
-          } catch (error) {
-            console.error(`The RASCAL Saga for "${name}" encountered an uncaught error:`);
-            console.error(error);
+): (() => Generator<AllEffect<ForkEffect<void>>, void, unknown>) =>
+  function* rootSaga() {
+    yield all(
+      Object.entries(sagas).map(([name, saga]) =>
+        spawn(function* () {
+          while (true) {
+            try {
+              yield call(saga);
+              break;
+            } catch (error) {
+              console.error(`The RASCAL Saga for "${name}" encountered an uncaught error:`);
+              console.error(error);
+            }
           }
-        }
-      }),
-    ),
-  );
-}
+        }),
+      ),
+    );
+  };

@@ -80,6 +80,6 @@ describe("createRASCL", () => {
   });
 
   it("creates a root saga", () => {
-    expect(typeof output.rootSaga).toBe("object");
+    expect(typeof output.rootSaga).toBe("function");
   });
 });
