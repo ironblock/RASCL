@@ -1,5 +1,5 @@
-import { snakeCase } from "lodash";
-import { SnakeCase } from "type-fest";
+import snakeCase from "lodash.snakecase";
+import type { SnakeCase } from "type-fest";
 
 import { RASCL } from ".";
 import { APIFunctionMap } from "./types/API";

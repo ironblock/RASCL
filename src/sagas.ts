@@ -1,5 +1,5 @@
 import ky from "ky";
-import { Action } from "redux";
+import type { Action } from "redux";
 import {
   ActionPattern,
   AllEffect,
