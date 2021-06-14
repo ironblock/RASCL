@@ -17,7 +17,7 @@ Trying to follow established best practices for Redux [often results in repetiti
 
 Libraries like [redux-actions](https://github.com/acdlite/redux-actions) and [redux-act](https://github.com/pauldijou/redux-act) already reduce some of this boilerplate, but RASCL goes further and removes it all. 
 
-Given a map of API calls, RASCL can generate every part of a complete Redux and [Redux-Saga](https://redux-saga.js.org/) setup.
+Given a map of API calls, RASCL can generate every part of a complete Redux and [Redux-Saga](https://redux-saga.js.org/) setup:
 
 ```typescript
 import * as MyAPI from "./API";
@@ -38,7 +38,7 @@ export const {
 Once RASCL is invoked, an application only needs to do two things:
 
 1. Dispatch Redux actions to **indirectly make API requests**
-2. Use selector functions to **indirectly access the results**.
+2. Use selector functions to **indirectly access the results**
 
 ---
 
@@ -59,8 +59,6 @@ Once RASCL is invoked, an application only needs to do two things:
 ---
 
 ## Installation
-
-RASCL is available on npm, and can be installed with
 ```
 npm i -S rascl
 ```
@@ -69,7 +67,9 @@ or
 yarn add rascl
 ```
 
-`redux-saga` and `ky` are optional dependencies. Both are highly recommended, but not necessary for RASCL to function.
+`redux-saga` and `ky` are optional dependencies. Both are highly recommended, but not strictly necessary for RASCL to function.
+
+**⚠︎ NOTE:** When used with TypeScript, RASCL's typings require TypeScript version 4.2 or later due to a dependency on [Template Literal Types](https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html).
 
 <br />
 
@@ -91,12 +91,12 @@ The API file should export either an object, or individual named exports that ca
 
 > `src/api/MyAPI.ts`
 ```typescript
-const ky = (await import("ky")).default;
-
-export const getKitten = () => ky.get("http://placekitten.com/200/300");
+export const getSomething = () => 
+  fetch("https://jsonplaceholder.typicode.com/posts/1")
+    .then((response) => response.json());
 ```
 
-For simplicity's sake, it's a good idea to call `createRASCL` in a separate module and export the results.
+It's a good idea to call `createRASCL` in a dedicated module and export the results.
 
 > `src/redux/RASCL.ts`
 ```typescript
@@ -120,14 +120,16 @@ Then, add the reducer into `combineReducers`:
 ```typescript
 import { combineReducers } from "redux";
 
-import { reducer as RASCLReducer } from "./RASCL";
+import { reducer } from "./RASCL";
 
 const rootReducer = combineReducers({
-  RASCL: RASCLReducer,
+  RASCL: reducer,
 });
 
 export default rootReducer;
 ```
+
+The setup for the application's store is entirely conventional, the root reducer and root saga are each passed to their respective handlers.
 
 > `src/redux/store.ts`
 ```typescript
