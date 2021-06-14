@@ -1,6 +1,6 @@
 {
   "name": "rascl",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0",
   "description": "Redux API State Caching Layer",
   "license": "BSD-2-Clause",
   "repository": {
