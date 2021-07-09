@@ -9,13 +9,13 @@
 ![npm](https://img.shields.io/npm/v/rascl?style=flat-square)
 ![Codecov](https://img.shields.io/codecov/c/github/ironblock/rascl?style=flat-square)
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ironblock/rascl/RASCL%20CI/develop?label=develop&style=flat-square)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ironblock/rascl/RASCL%20CI/master?label=master&style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ironblock/rascl/RASCL%20CI/main?label=main&style=flat-square)
 
 RASCL is an opinionated library that creates "zero boilerplate" bridges between API clients and [Redux](https://redux.js.org).
 
 Trying to follow established best practices for Redux [often results in repetitious code](https://redux.js.org/recipes/reducing-boilerplate). Because this type of code is tedious to write and time-consuming to maintain, it's also a frequent source of "copy/paste" errors.
 
-Libraries like [redux-actions](https://github.com/acdlite/redux-actions) and [redux-act](https://github.com/pauldijou/redux-act) already reduce some of this boilerplate, but RASCL goes further and removes it all. 
+Libraries like [redux-actions](https://github.com/acdlite/redux-actions) and [redux-act](https://github.com/pauldijou/redux-act) already reduce some of this boilerplate, but RASCL goes further and removes it all.
 
 Given a map of API calls, RASCL can generate every part of a complete Redux and [Redux-Saga](https://redux-saga.js.org/) setup:
 
@@ -75,7 +75,7 @@ yarn add rascl
 
 ## How to Use RASCL
 
-RASCL is designed to fit into any existing Redux implementation. 
+RASCL is designed to fit into any existing Redux implementation.
 
 This simple example assumes the following directory structure:
 ```
@@ -91,7 +91,7 @@ The API file should export either an object, or individual named exports that ca
 
 > `src/api/MyAPI.ts`
 ```typescript
-export const getSomething = () => 
+export const getSomething = () =>
   fetch("https://jsonplaceholder.typicode.com/posts/1")
     .then((response) => response.json());
 ```
@@ -244,7 +244,7 @@ The initial state for every endpoint looks like this:
 
   /**
    * METADATA
-   * Location in the finite state machine, helpers for 
+   * Location in the finite state machine, helpers for
    * showing how old the last result is, are we
    * currently awaiting data, etc. This helps with common
    * patterns like "show a spinner while waiting for
@@ -303,7 +303,7 @@ The second option addresses the technical debt, but may introduce unexpected beh
 
 ## Related Concepts
 - [Cohesion](https://en.wikipedia.org/wiki/Cohesion_%28computer_science%29#High_cohesion)
-- [Loose Coupling](https://en.wikipedia.org/wiki/Loose_coupling) 
+- [Loose Coupling](https://en.wikipedia.org/wiki/Loose_coupling)
 
 <br />
 
