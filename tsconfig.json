@@ -18,7 +18,7 @@
     "allowJs": true,
 
     /* Report errors in .js files. */
-    "checkJs": true,
+    "checkJs": false,
 
     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
     // "jsx": "preserve",
@@ -36,7 +36,7 @@
     "outDir": "./dist",
 
     /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
-    "rootDir": "./src",
+    // "rootDir": "./",
 
     /* Do not emit comments to output. */
     // "removeComments": true,
@@ -149,9 +149,5 @@
   "include": [
     "src",
     "tests",
-  ],
-  "exclude": [
-    "node_modules",
-    "**/.*",
   ]
 }
