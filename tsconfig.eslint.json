@@ -2,6 +2,8 @@
   "compilerOptions": { "strict": true },
   "include": [
     "**/src/**/*.ts",
+    "**/example/**/*.ts",
+    "**/example/**/*.tsx",
     "**/test/**/*.ts",
   ]
 }
