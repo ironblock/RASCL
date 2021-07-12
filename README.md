@@ -9,13 +9,13 @@
 ![npm](https://img.shields.io/npm/v/rascl?style=flat-square)
 ![Codecov](https://img.shields.io/codecov/c/github/ironblock/rascl?style=flat-square)
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ironblock/rascl/RASCL%20CI/develop?label=develop&style=flat-square)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ironblock/rascl/RASCL%20CI/master?label=master&style=flat-square)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ironblock/rascl/RASCL%20CI/main?label=main&style=flat-square)
 
 RASCL is an opinionated library that creates "zero boilerplate" bridges between API clients and [Redux](https://redux.js.org).
 
 Trying to follow established best practices for Redux [often results in repetitious code](https://redux.js.org/recipes/reducing-boilerplate). Because this type of code is tedious to write and time-consuming to maintain, it's also a frequent source of "copy/paste" errors.
 
-Libraries like [redux-actions](https://github.com/acdlite/redux-actions) and [redux-act](https://github.com/pauldijou/redux-act) already reduce some of this boilerplate, but RASCL goes further and removes it all. 
+Libraries like [redux-actions](https://github.com/acdlite/redux-actions) and [redux-act](https://github.com/pauldijou/redux-act) already reduce some of this boilerplate, but RASCL goes further and removes it all.
 
 Given a map of API calls, RASCL can generate every part of a complete Redux and [Redux-Saga](https://redux-saga.js.org/) setup:
 
@@ -99,7 +99,7 @@ A common problem with storing API responses in Redux is that - given enough deve
 
 ## Related Concepts
 - [Cohesion](https://en.wikipedia.org/wiki/Cohesion_%28computer_science%29#High_cohesion)
-- [Loose Coupling](https://en.wikipedia.org/wiki/Loose_coupling) 
+- [Loose Coupling](https://en.wikipedia.org/wiki/Loose_coupling)
 
 <br />
 
