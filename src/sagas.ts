@@ -1,4 +1,4 @@
-import ky from "ky";
+import { HTTPError as KyHTTPError, TimeoutError as KyTimeoutError } from "ky";
 import type { Action } from "redux";
 import {
   ActionPattern,
@@ -67,7 +67,7 @@ export function* kyRequestSaga<K extends string & keyof M, M extends APIFunction
 
     yield put(actionCreators.success(response));
   } catch (error) {
-    if (error instanceof ky.HTTPError) {
+    if (error instanceof KyHTTPError) {
       const { status } = error?.response;
 
       if (status >= 500) {
@@ -83,7 +83,7 @@ export function* kyRequestSaga<K extends string & keyof M, M extends APIFunction
         // Unknown Error (Treated as Client Error)
         yield put(actionCreators.mistake(unknownError));
       }
-    } else if (error instanceof ky.TimeoutError) {
+    } else if (error instanceof KyTimeoutError) {
       // Timeout Error
       yield put(actionCreators.timeout(error));
     } else if (error instanceof Error) {
