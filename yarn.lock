@@ -3221,10 +3221,10 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-ky@^0.27.0:
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/ky/-/ky-0.27.0.tgz#ecc9b195b9e1573ad6762a126bb3601d3bbd5b6c"
-  integrity sha512-pgaBuB6wI9DdMSOZBVh2WkcbkAdEG5AUEWuNhtThu6FLIpDbzqzC/fSMmqr/j1wwQyW3SP3KGau7EbzWNkQ/yg==
+ky@^0.28.5:
+  version "0.28.5"
+  resolved "https://registry.yarnpkg.com/ky/-/ky-0.28.5.tgz#4b7ada24fb0440c3898406f3a4986abe60ba213e"
+  integrity sha512-O5gg9kF4MeyfSw+YkgPAafOPwEUU6xcdGEJKUJmKpIPbLzk3oxUtY4OdBNekG7mawofzkyZ/ZHuR9ev5uZZdAA==
 
 leven@^3.1.0:
   version "3.1.0"
@@ -3966,6 +3966,11 @@ rechoir@^0.6.2:
   integrity sha1-hSBLVNuoLVdC4oyWdW70OvUOM4Q=
   dependencies:
     resolve "^1.1.6"
+
+redux-devtools-extension@^2.13.9:
+  version "2.13.9"
+  resolved "https://registry.yarnpkg.com/redux-devtools-extension/-/redux-devtools-extension-2.13.9.tgz#6b764e8028b507adcb75a1cae790f71e6be08ae7"
+  integrity sha512-cNJ8Q/EtjhQaZ71c8I9+BPySIBVEKssbPpskBfsXqb8HJ002A3KRVHfeRzwRo6mGPqsm7XuHTqNSNeS1Khig0A==
 
 redux-saga-test-plan@^4.0.1:
   version "4.0.1"
