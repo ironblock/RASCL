@@ -4,14 +4,21 @@ Most long-established patterns for UI interaction are handled in an easier, more
 
 The following React-based recipes are functional examples of the state logic required to implement some of these common patterns, but they are by no means the best or only way to accomplish such tasks. In particular, classes may not be the optimal architecture in certain situations, and are preferred here only because they illustrate clearly the lifecycle and state data.
 
-Many of these examples can also be trivially improved with memoized selectors or other refactoring.
+Many of these examples can also be trivially improved with memoized selectors.
+
+- [Common Patterns](#common-patterns)
+  - [Get last successful update](#get-last-successful-update)
+  - [Get time of last successful update.](#get-time-of-last-successful-update)
+    - [Compare the timestamps between different types of update](#compare-the-timestamps-between-different-types-of-update)
+  - [Change UI based on a state update](#change-ui-based-on-a-state-update)
+  - [Perform a side effect in response to a given action type](#perform-a-side-effect-in-response-to-a-given-action-type)
 
 ## Get last successful update
 
 This one is as easy as possible. Anything `success` value in a RASCL state object is the most recent success.
 
 ```js
-const getLastSuccess = (state) => state.success
+const getLastSuccess = (state) => state.success;
 ```
 
 ## Get time of last successful update.
@@ -19,10 +26,10 @@ const getLastSuccess = (state) => state.success
 This is slightly more complicated, and is a good use case for something like Reselect's memoization.
 
 ```js
-const getLastSuccessTimestamp = (state) => (state.lastResult === 'success' ? state.lastUpdate : 0)
+const getLastSuccessTimestamp = (state) => (state.lastResult === "success" ? state.lastUpdate : 0);
 ```
 
-## Compare the timestamps between different types of update
+### Compare the timestamps between different types of update
 
 A commonly observed "flaw" in the shape of a RASCL state object is that we only know the time of the last update of **any** type, not itemized per type. So if the last result was a `success`, and we want to know the time of the last `success` we're in luck. But what if it was a `failure`?
 
@@ -36,13 +43,13 @@ Let's say you have an application that sends messages to cats you think are cute
 
 In an application with non-globalized state, you would use a simple callback to accomplish this.
 
-```jsx
+```tsx
 import { connect } from "react-redux";
 
 import type { StateShape } from "./your/reducer";
 import actions from "./your/actions"
 
-const mapDispatchToProps = (dispatch: *): * => ({
+const mapDispatchToProps = (dispatch) => ({
   onSubmitMessage: message => dispatch(actions.messageCuteCat(message))
 });
 
@@ -51,15 +58,7 @@ const mapStateToProps = (state: StateShape) => ({
   lastSuccess: getLastSuccess(state.api.messageCuteCat)
 });
 
-type State = {
-  modalOpened: number
-};
-type Props = {
-  ...$Call<typeof mapDispatchToProps>,
-  ...$Call<typeof mapStateToProps, StateShape>
-};
-
-class CloseModalExample<State, Props> {
+class CloseModalExample {
   state = {
     modalOpened: 0
   };
