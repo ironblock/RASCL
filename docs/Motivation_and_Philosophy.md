@@ -4,7 +4,6 @@ Redux is fundamentally a way to globalize state. This flexability is extremely h
 
 A common problem with storing API responses in Redux is that - given enough developers - different people will duplicate or extend Redux boilerplate according to their current focus. It often seems efficient or "cleaner" to store only a small portion of a response, knowing or assuming that the remainder is (currently) unused.
 
-
 ## Strawman Example
 
 Let's imagine that Alice and Bryce are working on a new application against an existing API.
