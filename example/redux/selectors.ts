@@ -1,6 +1,6 @@
 import { createSelector } from "reselect";
 
-import { GetAverageInterestRatesResponse } from "../api/treasury/interestRates";
+import type { GetAverageInterestRatesResponse } from "../api/treasury/interestRates";
 import type { RASCLState } from "./RASCL";
 
 export const getAllAverageInterestRates = (

@@ -1,9 +1,11 @@
 import "jest";
-import { ActionCreatorsMap, createActions } from "../src/actions";
+import type { ActionCreatorsMap } from "../src/actions";
+import { createActions } from "../src/actions";
 import { createTypeConstants } from "../src/constants";
-import { RFSA, RFSE } from "../src/types/RFSA";
-import * as ExampleAPI from "./stubs/apiKy";
-import { ExampleEntity, FruitQuantity, GetResponse } from "./stubs/entities";
+import type { RFSA, RFSE } from "../src/types/RFSA";
+import type * as ExampleAPI from "./stubs/apiKy";
+import type { FruitQuantity } from "./stubs/entities";
+import { ExampleEntity, GetResponse } from "./stubs/entities";
 
 const getTypes = createTypeConstants<typeof ExampleAPI, "getExample">("getExample");
 const getActions: ActionCreatorsMap<typeof ExampleAPI>["getExample"] = createActions<

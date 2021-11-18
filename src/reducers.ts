@@ -1,7 +1,7 @@
 import produce from "immer";
 import type { Reducer } from "redux";
 
-import {
+import type {
   FailureAction,
   MistakeAction,
   OfflineAction,
@@ -10,7 +10,7 @@ import {
   SuccessAction,
   TimeoutAction,
 } from "./actions";
-import {
+import type {
   FailureType,
   MistakeType,
   OfflineType,
@@ -19,8 +19,8 @@ import {
   SuccessType,
   TimeoutType,
 } from "./constants";
-import { APIFunctionMap, EndpointState, EndpointStateMap } from "./types/API";
-import { RFSA, RFSE } from "./types/RFSA";
+import type { APIFunctionMap, EndpointState, EndpointStateMap } from "./types/API";
+import type { RFSA, RFSE } from "./types/RFSA";
 
 export interface EndpointMetadata {
   isFetching: boolean;

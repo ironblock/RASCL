@@ -1,9 +1,9 @@
-import { ActionCreatorsMap, createActions } from "./actions";
-import { ActionTypeConstantsMap, createTypeConstants } from "./constants";
+import type { ActionCreatorsMap } from "./actions";
+import { createActions } from "./actions";
+import type { ActionTypeConstantsMap } from "./constants";
+import { createTypeConstants } from "./constants";
+import type { APIHandlerMap, APIReducer, APIReducerState } from "./reducers";
 import {
-  APIHandlerMap,
-  APIReducer,
-  APIReducerState,
   createReducer,
   handleFailure,
   handleMistake,
@@ -13,14 +13,9 @@ import {
   handleTimeout,
   initialEndpointState,
 } from "./reducers";
-import {
-  createRootSaga,
-  createWatcherSaga,
-  kyRequestSaga,
-  WatcherSaga,
-  WatcherSagaMap,
-} from "./sagas";
-import { APIFunctionMap } from "./types/API";
+import type { WatcherSaga, WatcherSagaMap } from "./sagas";
+import { createRootSaga, createWatcherSaga, kyRequestSaga } from "./sagas";
+import type { APIFunctionMap } from "./types/API";
 
 export interface RASCL<M extends APIFunctionMap> {
   types: ActionTypeConstantsMap<M>;
