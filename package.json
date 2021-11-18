@@ -30,10 +30,9 @@
   "scripts": {
     "build": "tsc",
     "preci": "rm -rf node_modules",
-    "ci": "npm install --frozen-lockfile",
     "jest": "jest --env=node --colors --coverage --verbose",
     "lint": "eslint --ext .ts,.tsx,.test.ts .",
-    "lint:fix": "npm run lint --fix",
+    "lint:fix": "npm run lint -- --fix",
     "prepack": "npm run build",
     "prepublishOnly": "npm run test",
     "test": "npm run lint ; npm run typecheck ; npm run jest",

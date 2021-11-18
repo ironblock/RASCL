@@ -55,43 +55,37 @@ export type APIHandlerMap<M extends APIFunctionMap> = {
     draft: APIReducerState<M>,
     action: EnqueueAction<ET, M>,
   ) => void;
-} &
-  {
-    [RT in string as RequestType<RT>]: (
-      draft: APIReducerState<M>,
-      action: RequestAction<RT, M>,
-    ) => void;
-  } &
-  {
-    [ST in string as SuccessType<ST>]: (
-      draft: APIReducerState<M>,
-      action: SuccessAction<ST, M>,
-    ) => void;
-  } &
-  {
-    [FT in string as FailureType<FT>]: (
-      draft: APIReducerState<M>,
-      action: FailureAction<FT, M>,
-    ) => void;
-  } &
-  {
-    [MT in string as MistakeType<MT>]: (
-      draft: APIReducerState<M>,
-      action: MistakeAction<MT, M>,
-    ) => void;
-  } &
-  {
-    [TT in string as TimeoutType<TT>]: (
-      draft: APIReducerState<M>,
-      action: TimeoutAction<TT, M>,
-    ) => void;
-  } &
-  {
-    [OT in string as OfflineType<OT>]: (
-      draft: APIReducerState<M>,
-      action: OfflineAction<OT, M>,
-    ) => void;
-  };
+} & {
+  [RT in string as RequestType<RT>]: (
+    draft: APIReducerState<M>,
+    action: RequestAction<RT, M>,
+  ) => void;
+} & {
+  [ST in string as SuccessType<ST>]: (
+    draft: APIReducerState<M>,
+    action: SuccessAction<ST, M>,
+  ) => void;
+} & {
+  [FT in string as FailureType<FT>]: (
+    draft: APIReducerState<M>,
+    action: FailureAction<FT, M>,
+  ) => void;
+} & {
+  [MT in string as MistakeType<MT>]: (
+    draft: APIReducerState<M>,
+    action: MistakeAction<MT, M>,
+  ) => void;
+} & {
+  [TT in string as TimeoutType<TT>]: (
+    draft: APIReducerState<M>,
+    action: TimeoutAction<TT, M>,
+  ) => void;
+} & {
+  [OT in string as OfflineType<OT>]: (
+    draft: APIReducerState<M>,
+    action: OfflineAction<OT, M>,
+  ) => void;
+};
 
 export const createReducer = <M extends APIFunctionMap>(
   handlerMap: APIHandlerMap<M>,

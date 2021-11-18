@@ -116,10 +116,9 @@ describe("Action Creators", () => {
   });
 
   it("generates actions containing multiple function arguments", () => {
-    const request: RFSA<
-      "DELETE_EXAMPLE_REQUEST",
-      [boolean, FruitQuantity]
-    > = deleteActions.request([true, ExampleEntity]);
+    const request: RFSA<"DELETE_EXAMPLE_REQUEST", [boolean, FruitQuantity]> = deleteActions.request(
+      [true, ExampleEntity],
+    );
 
     expect(request).toMatchObject({
       type: "DELETE_EXAMPLE_REQUEST",

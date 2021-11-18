@@ -8,7 +8,7 @@ export interface RASCLFluxStandardAction<T extends string, P extends any, M exte
 export interface RASCLFluxStandardActionError<
   T extends string,
   P extends Error | null = null,
-  M extends any = null
+  M extends any = null,
 > extends RASCLFluxStandardAction<T, P, M> {
   error: true;
   payload: P;
