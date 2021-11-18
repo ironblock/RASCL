@@ -28,7 +28,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "swc src --out-dir dist --sync --delete-dir-on-start && tsc --emitDeclarationOnly --outDir dist",
+    "build:experimental-swc": "swc src --out-dir dist --sync --delete-dir-on-start && tsc --emitDeclarationOnly --outDir dist",
     "preci": "rm -rf node_modules",
     "jest": "jest --env=node --colors --coverage --verbose",
     "lint": "eslint --ext .ts,.tsx,.test.ts .",
@@ -36,14 +37,20 @@
     "prepack": "npm run build",
     "prepublishOnly": "npm run test",
     "test": "npm run lint ; npm run typecheck ; npm run jest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --pretty --skipLibCheck --noEmit"
   },
   "dependencies": {
     "immer": "^9.0.1",
     "lodash.snakecase": "^4.1.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-typescript": "^7.16.0",
     "@redux-saga/core": "^1.1.3",
+    "@swc/cli": "^0.1.51",
+    "@swc/core": "^1.2.110",
+    "@swc/jest": "^0.2.5",
     "@types/eslint": "^8.2.0",
     "@types/eslint-plugin-prettier": "^3.1.0",
     "@types/jest": "^27.0.2",
@@ -53,6 +60,7 @@
     "@types/prettier": "^2.4.2",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
+    "babel-plugin-macros": "^3.1.0",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard-with-typescript": "^20.0.0",
@@ -61,7 +69,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-standard": "^5.0.0",
-    "jest": "^27.0.6",
+    "jest": "^27.3.1",
     "ky": "^0.28.7",
     "node-fetch": "^2.6.1",
     "prettier": "^2.2.1",
@@ -70,8 +78,8 @@
     "redux-saga": "^1.1.3",
     "redux-saga-test-plan": "^4.0.1",
     "reselect": "^4.1.4",
-    "ts-jest": "^27.0.3",
     "type-fest": "^1.0.1",
+    "typed-redux-saga": "^1.3.1",
     "typedoc": "^0.20.35",
     "typescript": "~4.4.0",
     "typescript-tuple": "^5.0.1"
