@@ -1,5 +1,5 @@
-import { AsyncReturnType } from "type-fest";
-import { Tail, First } from "typescript-tuple";
+import type { AsyncReturnType } from "type-fest";
+import type { Tail, First } from "typescript-tuple";
 
 import {
   EnqueueType,

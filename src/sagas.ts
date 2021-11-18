@@ -17,7 +17,7 @@ import {
   TakeEffect,
   Effect,
 } from "redux-saga/effects";
-import { AsyncReturnType } from "type-fest";
+import type { AsyncReturnType } from "type-fest";
 import { Prepend, First } from "typescript-tuple";
 
 import {
@@ -98,7 +98,7 @@ export function* kyRequestSaga<K extends string & keyof M, M extends APIFunction
 
 export function* kyPrivateRequestSaga<
   K extends string & keyof M,
-  M extends APIFunctionMapWithAuthentication
+  M extends APIFunctionMapWithAuthentication,
 >(
   request: M[K],
   actionCreators: ActionCreatorsMap<M>[K],
