@@ -1,25 +1,23 @@
 import { HTTPError as KyHTTPError, TimeoutError as KyTimeoutError } from "ky";
 import type { Action } from "redux";
-import type { StrictEffect, ActionPattern, ForkEffect } from "redux-saga/effects";
+import type { SagaIterator } from "redux-saga";
+import type { ActionPattern } from "redux-saga/effects";
 import { put, fork, call } from "redux-saga/effects";
-import type { AsyncReturnType } from "type-fest";
 import type { First, Prepend } from "typescript-tuple";
 
-import { requireAuth, unknownError } from ".";
-import type {
-  ActionCreatorsMap,
-  RequestAction,
-  EnqueueAction,
-  RequestParameters,
-} from "../actions";
+import { requireAuth } from ".";
+import type { ActionCreatorsMap, RequestAction, EnqueueAction } from "../actions";
 import { doesNotUseParams } from "../actions";
+import { MistakeError } from "../errors";
 import type {
   APIFunctionMap,
   APICallNoParams,
   APICallWithParams,
   APICallWithAuthentication,
   APIFunctionMapWithAuthentication,
+  RequestParameters,
 } from "../types/API";
+import type { AuthenticationSelector } from "../types/sagas";
 
 /**
  * PUBLIC ENDPOINT (KY)
@@ -28,14 +26,15 @@ import type {
  *
  * @param requestMethod
  * @param action
+ *: Generator<Effect<any, any>, void, PromiseValue<ReturnType<M[K]>, ReturnType<M[K]>>>
  */
 export function* kyRequestSaga<K extends string & keyof M, M extends APIFunctionMap>(
   request: M[K],
   actionCreators: ActionCreatorsMap<M>[K],
   { payload }: RequestAction<K, M>,
-): Generator<StrictEffect, void, AsyncReturnType<M[K]>> {
+): SagaIterator<void> {
   try {
-    const response = yield doesNotUseParams(request, payload)
+    const response: ReturnType<M[K]> = yield doesNotUseParams(request, payload)
       ? call<APICallNoParams>(request)
       : call<APICallWithParams | APICallWithAuthentication>(request, ...payload);
 
@@ -55,7 +54,11 @@ export function* kyRequestSaga<K extends string & keyof M, M extends APIFunction
         yield put(actionCreators.offline(error));
       } else {
         // Unknown Error (Treated as Client Error)
-        yield put(actionCreators.mistake(unknownError));
+        yield put(
+          actionCreators.mistake(
+            new MistakeError(error?.response, error?.message || "Unknown error"),
+          ),
+        );
       }
     } else if (error instanceof KyTimeoutError) {
       // Timeout Error
@@ -65,29 +68,31 @@ export function* kyRequestSaga<K extends string & keyof M, M extends APIFunction
       yield put(actionCreators.mistake(error));
     } else {
       // Unknown Error (Treated as Client Error)
-      yield put(actionCreators.mistake(unknownError));
+      yield put(actionCreators.mistake(new MistakeError(null, "An unknown error ocurred")));
     }
   }
 }
 
 export function* kyPrivateRequestSaga<
   K extends string & keyof M,
-  M extends APIFunctionMapWithAuthentication,
+  M extends APIFunctionMap & APIFunctionMapWithAuthentication,
 >(
-  request: M[K],
+  request: M[K] & APICallWithAuthentication,
   actionCreators: ActionCreatorsMap<M>[K],
   { payload }: EnqueueAction<K, M>,
   pattern: ActionPattern<Action<any>>,
-  getAuthentication: () => First<Parameters<M[K]>>,
-): Generator<ForkEffect<unknown>, void, First<Parameters<M[K]>>> {
-  const authentication: First<Parameters<M[K]>> = yield fork(
-    requireAuth,
-    pattern,
-    getAuthentication,
-  );
+  getAuthentication: AuthenticationSelector<First<Parameters<M[K]>>>,
+): SagaIterator<void> {
+  const authentication = yield fork(requireAuth, pattern, getAuthentication);
   const authorizedPayload: Prepend<typeof payload, typeof authentication> &
     RequestParameters<K, M> = [authentication, ...(payload ?? [])];
   const authorizedRequest = actionCreators.request(authorizedPayload);
 
-  yield fork(kyRequestSaga, request, actionCreators, authorizedRequest);
+  /**
+   * TODO: This shouldn't be typed as fork<any>, but it's fiendishly difficult
+   * to provide the correct typing. TypeScript seems to correctly infer the
+   * actual internal types of each parameter, so hopefully this is just missing
+   * some narrowing and not actually introducting an overly permissive type.
+   */
+  yield fork<any>(kyRequestSaga, request, actionCreators, authorizedRequest);
 }

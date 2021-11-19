@@ -4,6 +4,7 @@ import type { ActionTypeConstantsMap } from "./constants";
 import { createTypeConstants } from "./constants";
 import type { APIHandlerMap, APIReducer, APIReducerState } from "./reducers";
 import {
+  handleEnqueue,
   createReducer,
   handleFailure,
   handleMistake,
@@ -13,8 +14,9 @@ import {
   handleTimeout,
   initialEndpointState,
 } from "./reducers";
-import type { WatcherSaga, WatcherSagaMap } from "./sagas";
-import { createRootSaga, createWatcherSaga, kyRequestSaga } from "./sagas";
+import type { EndpointWatcherSaga, WatcherSagaMap } from "./sagas";
+import { createRootSaga, createWatcherSaga } from "./sagas";
+import { automaticFetchEnqueue, automaticFetchRequest } from "./sagas/fetch";
 import type { APIFunctionMap } from "./types/API";
 
 export interface RASCL<M extends APIFunctionMap> {
@@ -28,13 +30,17 @@ export interface RASCL<M extends APIFunctionMap> {
 }
 
 export interface Options<M extends APIFunctionMap> {
-  defaultWatcher: WatcherSaga<keyof M & string, M>;
-  watchers: { [k in keyof M]: WatcherSaga<keyof M & string, M> };
+  enqueueWatcher: EndpointWatcherSaga<keyof M & string, M>;
+  requestWatcher: EndpointWatcherSaga<keyof M & string, M>;
+  enqueueEndpoints: Set<keyof M & string>;
+  customWatchers: { [k in keyof M]: EndpointWatcherSaga<keyof M & string, M> };
 }
 
 export const defaultOptions: Options<any> = {
-  defaultWatcher: kyRequestSaga,
-  watchers: {},
+  enqueueWatcher: automaticFetchEnqueue,
+  requestWatcher: automaticFetchRequest,
+  enqueueEndpoints: new Set(),
+  customWatchers: {},
 };
 
 export const createRASCL = <M extends APIFunctionMap>(
@@ -63,6 +69,7 @@ export const createRASCL = <M extends APIFunctionMap>(
     initialState[name] = initialEndpointState;
 
     // REDUCER ACTION HANDLERS
+    handlers[typeConstants.enqueue] = (draft, action) => handleEnqueue(name, draft, action);
     handlers[typeConstants.request] = (draft, action) => handleRequest(name, draft, action);
     handlers[typeConstants.success] = (draft, action) => handleSuccess(name, draft, action);
     handlers[typeConstants.failure] = (draft, action) => handleFailure(name, draft, action);
@@ -71,12 +78,21 @@ export const createRASCL = <M extends APIFunctionMap>(
     handlers[typeConstants.offline] = (draft, action) => handleOffline(name, draft, action);
 
     // SAGAS
-    watchers[name] = createWatcherSaga(
-      typeConstants.request,
-      watchers[name] ?? selectedOptions.defaultWatcher,
-      functions[name],
-      actions[name] as ActionCreatorsMap<M>[typeof name],
-    );
+    if (selectedOptions.enqueueEndpoints.has(name)) {
+      watchers[name] = createWatcherSaga(
+        typeConstants.enqueue,
+        selectedOptions.customWatchers[name] ?? selectedOptions.enqueueWatcher,
+        functions[name],
+        actions[name] as ActionCreatorsMap<M>[typeof name],
+      );
+    } else {
+      watchers[name] = createWatcherSaga(
+        typeConstants.request,
+        selectedOptions.customWatchers[name] ?? selectedOptions.requestWatcher,
+        functions[name],
+        actions[name] as ActionCreatorsMap<M>[typeof name],
+      );
+    }
   }
 
   return {

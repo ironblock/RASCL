@@ -1,28 +1,28 @@
 import type { Action } from "redux";
+import type { SagaIterator } from "redux-saga";
 import { all, call, select, spawn, take, takeLatest } from "redux-saga/effects";
-import type {
-  AllEffect,
-  StrictEffect,
-  ActionPattern,
-  ForkEffect,
-  SelectEffect,
-  TakeEffect,
-  Effect,
-} from "redux-saga/effects";
+import type { ActionPattern } from "redux-saga/effects";
 
 import type { ActionCreatorsMap } from "../actions";
 import type { EnqueueType, RequestType } from "../constants";
 import type { APIFunctionMap } from "../types/API";
+import type { AuthenticationSelector } from "../types/sagas";
 
-export const unknownError = new Error("An error of an unknown type occurred");
+/**
+ * NOTE: These sagas don't handle a number of more specific cases, like "access
+ * denied" or "request timed out". A comprehensive implementation of RASCL
+ * involves either composing the more basic sagas provided by RASCL, or writing
+ * custom sagas to handle the particulars of a given API implementation.
+ */
 
-export type WatcherSaga<K extends string & keyof M, M extends APIFunctionMap> = (
+export type EndpointWatcherSaga<K extends string & keyof M, M extends APIFunctionMap> = (
   request: M[K],
   actionCreators: ActionCreatorsMap<M>[K],
   ...params: any
-) => Generator<Effect<EnqueueType<K> | RequestType<K>>, void, any>;
+) => SagaIterator<void>;
+
 export type WatcherSagaMap<M extends APIFunctionMap> = {
-  [K in string & keyof M]: WatcherSaga<K, M>;
+  [K in string & keyof M]: EndpointWatcherSaga<K, M>;
 };
 
 /**
@@ -30,16 +30,19 @@ export type WatcherSagaMap<M extends APIFunctionMap> = {
  * @param pattern A pattern compatible with Redux's `take()` effect. Should
  * match any actions that may cause the authentication selector to return valid
  * credentials.
+ *
  * @param getAuthentication A selector to be called with Redux's `select()`
  * effect. Should return authentication credentials when available.
+ *
  * @returns authentication Authentication credentials in whichever shape your
  * API calls require them. Can be explicitly typed using `requireAuth`'s `A`
- * generic.
+ * generic, which can then be passed to any API calling function that requires
+ * that form of authentication.
  */
 export function* requireAuth<A extends unknown>(
   pattern: ActionPattern<Action<any>>,
-  getAuthentication: () => A,
-): Generator<SelectEffect | TakeEffect, A, A> {
+  getAuthentication: AuthenticationSelector<A>,
+): SagaIterator<A> {
   let authentication: A = yield select(getAuthentication);
 
   while (typeof authentication === "undefined" || authentication === null) {
@@ -51,19 +54,25 @@ export function* requireAuth<A extends unknown>(
 }
 
 export const createWatcherSaga = <K extends string & keyof M, M extends APIFunctionMap>(
-  requestType: RequestType<K>,
-  requestSaga: WatcherSaga<K, M>,
+  requestType: EnqueueType<K> | RequestType<K>,
+  requestSaga: EndpointWatcherSaga<K, M>,
   request: M[K],
   actionCreators: ActionCreatorsMap<M>[K],
   ...args: any
-): (() => Generator<StrictEffect, void, void>) =>
+): (() => SagaIterator<void>) =>
   function* watcherSaga() {
     yield takeLatest(requestType, requestSaga, request, actionCreators, ...args);
   };
 
+/**
+ * createRootSaga is a foundational element of RASCL. It provides handlers for all
+ * the lifecycle events of an API call.
+ * @param sagas A map of saga functions
+ * @returns rootSaga A SagaIterator function that can be used as a root saga.
+ */
 export const createRootSaga = <M extends APIFunctionMap>(
   sagas: WatcherSagaMap<M>,
-): (() => Generator<AllEffect<ForkEffect<void>>, void, unknown>) =>
+): (() => SagaIterator<void>) =>
   function* rootSaga() {
     yield all(
       Object.entries(sagas).map(([name, saga]) =>
