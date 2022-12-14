@@ -1,9 +1,11 @@
-import { ActionCreators } from "../../src/actions";
-import { ActionTypeConstantsMap } from "../../src/constants";
-import { APIReducerState, initialEndpointState } from "../../src/reducers";
-import { RFSA, RFSE } from "../../src/types/RFSA";
-import * as ExampleAPI from "./apiKy";
-import { ExampleEntity, FruitQuantity, GetResponse } from "./entities";
+import type { ActionCreators } from "../../src/actions";
+import type { ActionTypeConstantsMap } from "../../src/constants";
+import type { APIReducerState } from "../../src/reducers";
+import { initialEndpointState } from "../../src/reducers";
+import type { RFSA, RFSE } from "../../src/types/RFSA";
+import type * as ExampleAPI from "./apiKy";
+import type { FruitQuantity } from "./entities";
+import { ExampleEntity, GetResponse } from "./entities";
 
 export const INITIAL_STATE: APIReducerState<typeof ExampleAPI> = {
   getExample: initialEndpointState,

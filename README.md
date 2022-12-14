@@ -56,13 +56,13 @@ import * as MyAPI from "./API";
 const { createRASCL } = await import("rascl");
 
 export const {
-  types, // String constants for action types
-  actions, // Action creator functions
-  initialState, // Initial Redux store state
-  handlers, // Action handlers for state updates
-  watchers, // Sagas to respond to each type of action
-  reducer, // A root reducer
-  rootSaga, // A root saga
+  types,         // String constants for action types
+  actions,       // Action creator functions
+  initialState,  // Initial Redux store state
+  handlers,      // Action handlers for state updates
+  watchers,      // Sagas to respond to each type of action
+  reducer,       // A root reducer
+  rootSaga,      // A root saga
 } = createRASCL(MyAPI);
 ```
 

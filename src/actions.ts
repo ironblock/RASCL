@@ -1,7 +1,7 @@
-import { AsyncReturnType } from "type-fest";
-import { Tail, First } from "typescript-tuple";
+import type { TimeoutError } from "ky";
+import type { AsyncReturnType } from "type-fest";
 
-import {
+import type {
   EnqueueType,
   RequestType,
   SuccessType,
@@ -11,29 +11,57 @@ import {
   OfflineType,
   ActionTypeConstantsMap,
 } from "./constants";
-import { APICallNoParams, APIFunctionMap, EndpointStateMap, GenericAPICall } from "./types/API";
-import { RFSA, RFSE } from "./types/RFSA";
-
-export type EnqueueParameters<K extends string & keyof M, M extends APIFunctionMap> = Tail<
-  Parameters<M[K]>
->;
-export type RequestParameters<K extends string & keyof M, M extends APIFunctionMap> =
-  | Parameters<M[K]>
-  | [First<Parameters<M[K]> & [any, ...any[]]>, ...EnqueueParameters<K, M>];
+import type { FailureError, MistakeError, OfflineError } from "./errors";
+import type {
+  APICallNoParams,
+  APIFunctionMap,
+  EndpointStateMap,
+  EnqueueParameters,
+  GenericAPICall,
+  RequestParameters,
+} from "./types/API";
+import type { RFSA, RFSE } from "./types/RFSA";
 
 export interface ActionCreators<K extends string, M extends APIFunctionMap>
   extends EndpointStateMap {
   readonly enqueue: (req: EnqueueParameters<K, M>) => RFSA<EnqueueType<K>, typeof req>;
   readonly request: (req: RequestParameters<K, M>) => RFSA<RequestType<K>, typeof req>;
   readonly success: (res: AsyncReturnType<M[K]>) => RFSA<SuccessType<K>, typeof res>;
-  readonly failure: (err: Error) => RFSE<FailureType<K>, typeof err>;
-  readonly mistake: (err: Error) => RFSE<MistakeType<K>, typeof err>;
-  readonly timeout: (err: Error) => RFSE<TimeoutType<K>, typeof err>;
-  readonly offline: (err: Error) => RFSE<OfflineType<K>, typeof err>;
+  readonly failure: (err: FailureError | Error) => RFSE<FailureType<K>, typeof err>;
+  readonly mistake: (err: MistakeError | Error) => RFSE<MistakeType<K>, typeof err>;
+  readonly timeout: (err: TimeoutError | Error) => RFSE<TimeoutType<K>, typeof err>;
+  readonly offline: (err: OfflineError | Error) => RFSE<OfflineType<K>, typeof err>;
 }
 
 export type ActionCreatorsMap<M extends APIFunctionMap> = {
   [K in string & keyof M]: ActionCreators<K, M>;
+};
+
+export type ActionCreatorsPostEnqueue<K extends string, M extends APIFunctionMap> = Omit<
+  ActionCreators<K, M>,
+  "enqueue"
+>;
+
+export type ActionCreatorsPostEnqueueMap<M extends APIFunctionMap> = {
+  [K in string & keyof M]: ActionCreatorsPostEnqueue<K, M>;
+};
+
+export type ActionCreatorsPostRequest<K extends string, M extends APIFunctionMap> = Omit<
+  ActionCreators<K, M>,
+  "enqueue" | "request"
+>;
+
+export type ActionCreatorsPostRequestMap<M extends APIFunctionMap> = {
+  [K in string & keyof M]: ActionCreatorsPostRequest<K, M>;
+};
+
+export type ActionCreatorsPostOutcome<K extends string, M extends APIFunctionMap> = Omit<
+  ActionCreators<K, M>,
+  "success" | "failure" | "mistake" | "timeout" | "offline"
+>;
+
+export type ActionCreatorsPostOutcomeMap<M extends APIFunctionMap> = {
+  [K in string & keyof M]: ActionCreatorsPostOutcome<K, M>;
 };
 
 export type EnqueueAction<K extends string & keyof M, M extends APIFunctionMap> = ReturnType<

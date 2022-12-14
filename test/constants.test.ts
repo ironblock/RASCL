@@ -1,6 +1,6 @@
 import "jest";
 import { createTypeConstants } from "../src/constants";
-import * as ExampleAPI from "./stubs/apiKy";
+import type * as ExampleAPI from "./stubs/apiKy";
 
 describe("Action Type Constants", () => {
   it("creates all action type constants for a given input", () => {

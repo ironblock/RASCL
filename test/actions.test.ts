@@ -1,9 +1,11 @@
 import "jest";
-import { ActionCreatorsMap, createActions } from "../src/actions";
+import type { ActionCreatorsMap } from "../src/actions";
+import { createActions } from "../src/actions";
 import { createTypeConstants } from "../src/constants";
-import { RFSA, RFSE } from "../src/types/RFSA";
-import * as ExampleAPI from "./stubs/apiKy";
-import { ExampleEntity, FruitQuantity, GetResponse } from "./stubs/entities";
+import type { RFSA, RFSE } from "../src/types/RFSA";
+import type * as ExampleAPI from "./stubs/apiKy";
+import type { FruitQuantity } from "./stubs/entities";
+import { ExampleEntity, GetResponse } from "./stubs/entities";
 
 const getTypes = createTypeConstants<typeof ExampleAPI, "getExample">("getExample");
 const getActions: ActionCreatorsMap<typeof ExampleAPI>["getExample"] = createActions<
@@ -116,10 +118,9 @@ describe("Action Creators", () => {
   });
 
   it("generates actions containing multiple function arguments", () => {
-    const request: RFSA<
-      "DELETE_EXAMPLE_REQUEST",
-      [boolean, FruitQuantity]
-    > = deleteActions.request([true, ExampleEntity]);
+    const request: RFSA<"DELETE_EXAMPLE_REQUEST", [boolean, FruitQuantity]> = deleteActions.request(
+      [true, ExampleEntity],
+    );
 
     expect(request).toMatchObject({
       type: "DELETE_EXAMPLE_REQUEST",

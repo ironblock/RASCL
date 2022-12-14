@@ -4,7 +4,8 @@
 
 import "jest";
 
-import createRASCL, { RASCL } from "../src/index";
+import type { RASCL } from "../src/index";
+import createRASCL from "../src/index";
 import { initialEndpointState } from "../src/reducers";
 
 const simpleAPI = {

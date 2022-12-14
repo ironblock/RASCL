@@ -1,8 +1,8 @@
 import snakeCase from "lodash.snakecase";
 import type { SnakeCase } from "type-fest";
 
-import { RASCL } from ".";
-import { APIFunctionMap } from "./types/API";
+import type { RASCL } from ".";
+import type { APIFunctionMap } from "./types/API";
 
 export type ConstantCase<S extends string> = Uppercase<SnakeCase<S>>;
 

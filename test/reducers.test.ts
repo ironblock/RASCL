@@ -11,7 +11,7 @@ import {
   handleOffline,
   initialEndpointState,
 } from "../src/reducers";
-import * as ExampleAPI from "./stubs/apiKy";
+import type * as ExampleAPI from "./stubs/apiKy";
 import { ExampleEntity } from "./stubs/entities";
 import {
   enqueueActionDelete,
