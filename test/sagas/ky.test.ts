@@ -7,7 +7,8 @@ import { expectSaga, testSaga } from "redux-saga-test-plan";
 import { throwError } from "redux-saga-test-plan/providers";
 import { call } from "redux-saga/effects";
 
-import { kyPrivateRequestSaga, kyRequestSaga, requireAuth } from "../../src/sagas";
+import { requireAuth } from "../../src/sagas";
+import { kyPrivateRequestSaga, kyRequestSaga } from "../../src/sagas/ky";
 import * as ExampleAPI from "../stubs/apiKy";
 import { GetResponse } from "../stubs/entities";
 import {

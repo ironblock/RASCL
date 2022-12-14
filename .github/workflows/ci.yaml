@@ -5,9 +5,9 @@ name: RASCL CI
 
 on:
   push:
-    branches: [ develop, feature/**, release/**, bug/**, chore/**, hotfix/**, fix/** ]
+    branches: [ main, develop, feature/**, release/**, bug/**, chore/**, hotfix/**, fix/** ]
   pull_request:
-    branches: [ develop ]
+    branches: [ main, develop ]
 
 jobs:
   setup:
@@ -28,7 +28,7 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-    - run: yarn ci
+    - run: npm ci
 
   build:
     needs: setup
@@ -37,8 +37,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
-    - run: yarn ci
-    - run: yarn build
+    - run: npm ci
+    - run: npm run build
 
   lint:
     needs: setup
@@ -47,8 +47,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
-    - run: yarn ci
-    - run: yarn lint
+    - run: npm ci
+    - run: npm run lint
+
+  typecheck:
+    needs: setup
+    runs-on: ubuntu-latest
+    name: Typecheck
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+    - run: npm ci
+    - run: npm run typecheck
 
   jest:
     needs: setup
@@ -57,8 +67,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
-    - run: yarn ci
-    - run: yarn jest
+    - run: npm ci
+    - run: npm run jest
     - name: Codecov
       # You may pin to the exact commit or the version.
       # uses: codecov/codecov-action@a1ed4b322b4b38cb846afb5a0ebfa17086917d27

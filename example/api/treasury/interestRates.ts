@@ -1,4 +1,5 @@
-import { Treasury, ConstraintParameters, buildParams } from "./index";
+import type { ConstraintParameters } from "./index";
+import { Treasury, buildParams } from "./index";
 
 /**
  * [GET] Get Quotes

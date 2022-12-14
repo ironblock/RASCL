@@ -1,6 +1,6 @@
 import ky from "ky";
 
-import { GetResponse, FruitQuantity } from "./entities";
+import type { GetResponse, FruitQuantity } from "./entities";
 
 export const getExample = async (): Promise<typeof GetResponse> =>
   await ky.get("example.com").json<typeof GetResponse>();

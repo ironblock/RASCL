@@ -7,5 +7,6 @@ import { reducer, rootSaga } from "./RASCL";
 export const sagaMiddleware = createSagaMiddleware();
 export const enhancer = composeWithDevTools(applyMiddleware(sagaMiddleware));
 export const store = createStore(reducer, enhancer);
+export type GlobalState = typeof store;
 
 sagaMiddleware.run(rootSaga);

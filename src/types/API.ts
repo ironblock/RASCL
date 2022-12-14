@@ -1,6 +1,17 @@
+import type { Tail, First } from "typescript-tuple";
+
 export type FetchResult<R> = R extends PromiseLike<infer U> ? FetchResult<U> : R;
 
-export type APICallWithAuthentication = (authentication: any, ...args: any[]) => FetchResult<any>;
+export type EnqueueParameters<K extends string & keyof M, M extends APIFunctionMap> = Tail<
+  Parameters<M[K]>
+>;
+export type RequestParameters<K extends string & keyof M, M extends APIFunctionMap> =
+  | Parameters<M[K]>
+  | [First<Parameters<M[K]> & [any, ...any[]]>, ...EnqueueParameters<K, M>];
+
+export type APICallWithAuthentication =
+  | ((authentication: any, ...args: any[]) => FetchResult<any>)
+  | ((authentication: any) => FetchResult<any>);
 export type APICallWithParams = (...args: any[]) => FetchResult<any>;
 export type APICallNoParams = () => FetchResult<any>;
 export type GenericAPICall = APICallWithAuthentication | APICallWithParams | APICallNoParams;
